@@ -1,4 +1,4 @@
-namespace EfficiencyHub.Models
+namespace EfficiencyHub.Web.ViewModels
 {
     public class ErrorViewModel
     {

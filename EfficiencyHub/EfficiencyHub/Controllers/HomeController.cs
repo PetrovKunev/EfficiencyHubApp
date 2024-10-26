@@ -1,4 +1,4 @@
-using EfficiencyHub.Models;
+using EfficiencyHub.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
