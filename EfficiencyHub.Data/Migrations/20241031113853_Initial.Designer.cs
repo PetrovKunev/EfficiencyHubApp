@@ -4,6 +4,7 @@ using EfficiencyHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfficiencyHub.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241031113853_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,6 +220,9 @@ namespace EfficiencyHub.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("Assignment")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("AssignmentId")
                         .HasColumnType("uniqueidentifier");
 
@@ -232,7 +238,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignmentId");
+                    b.HasIndex("Assignment");
 
                     b.HasIndex("UserId");
 
@@ -503,9 +509,9 @@ namespace EfficiencyHub.Data.Migrations
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.Reminder", b =>
                 {
-                    b.HasOne("EfficiencyHub.Data.Models.Assignment", "Assignment")
+                    b.HasOne("EfficiencyHub.Data.Models.Assignment", "Task")
                         .WithMany()
-                        .HasForeignKey("AssignmentId")
+                        .HasForeignKey("Assignment")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -515,7 +521,7 @@ namespace EfficiencyHub.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Assignment");
+                    b.Navigation("Task");
 
                     b.Navigation("User");
                 });

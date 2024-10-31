@@ -28,6 +28,7 @@ namespace EfficiencyHub.Data.Models
 
         // Описание на действието (напр., "Project Created" или "Task Deleted")
         [Required]
+        [MinLength(DescriptionMinLength)]
         [MaxLength(DescriptionMaxLength)]
         public string Description { get; set; } = null!;
     }

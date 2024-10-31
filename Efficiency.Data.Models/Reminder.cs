@@ -15,8 +15,8 @@ namespace EfficiencyHub.Data.Models
         [Required]
         public Guid AssignmentId { get; set; }
         
-        [ForeignKey(nameof(Assignment))]
-        public Assignment Task { get; set; } = null!;
+        [ForeignKey(nameof(AssignmentId))]
+        public Assignment Assignment { get; set; } = null!;
         [Required]
         public Guid UserId { get; set; }
 
