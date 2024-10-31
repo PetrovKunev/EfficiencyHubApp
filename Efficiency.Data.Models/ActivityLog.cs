@@ -1,6 +1,7 @@
 ﻿using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static EfficiencyHub.Common.EntityValidationConstants;
 
 namespace EfficiencyHub.Data.Models
 {
@@ -27,6 +28,7 @@ namespace EfficiencyHub.Data.Models
 
         // Описание на действието (напр., "Project Created" или "Task Deleted")
         [Required]
+        [MaxLength(DescriptionMaxLength)]
         public string Description { get; set; } = null!;
     }
 }

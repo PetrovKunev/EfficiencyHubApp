@@ -14,6 +14,8 @@ namespace EfficiencyHub.Data.Models
 
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; } = null!;
+
+        // Сумарен брой задачи, които са завършени?!?
         public int CompletedTasks { get; set; }
         public decimal AverageTaskCompletionTime { get; set; } // Време за изпълнение в часове или минути
         public DateTime ReportDate { get; set; }
