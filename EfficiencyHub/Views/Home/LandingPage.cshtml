@@ -1,9 +1,115 @@
 ﻿@{
-    ViewData["Title"] = "EfficiencyHub";
+    ViewData["Title"] = "Welcome to EfficiencyHub";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+    .landing-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #1f1f2e;
+            color: #d0e1f9;
+            text-align: center;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Manage Your Tasks Easily and Efficiently</h1><br>
-    <h2>Plan, organize, and track your team’s work in real time</h2><br><br><br>
-    <p>Our task and project management application is designed to help teams work more organized and effectively. Whether you're managing a small project or a large-scale initiative, our platform provides everything you need to better manage time and resources.</p>
-</div>
+    .landing-page header h1 {
+                font-size: 3rem;
+                color: #00e6e6;
+                margin-bottom: 1rem;
+    }
+
+            .landing-page header p {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+            }
+
+            .landing-page .cta {
+                display: flex;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .landing-page .btn {
+                padding: 0.8rem 2rem;
+                font-size: 1.2rem;
+                border-radius: 5px;
+                transition: background-color 0.3s ease;
+            }
+
+            .landing-page .btn-primary {
+                background-color: #4a90e2;
+                color: white;
+                text-decoration: none;
+            }
+
+                .landing-page .btn-primary:hover {
+                    background-color: #357ABD;
+                }
+
+            .landing-page .btn-secondary {
+                background-color: #e74c3c;
+                color: white;
+                text-decoration: none;
+            }
+
+                .landing-page .btn-secondary:hover {
+                    background-color: #c0392b;
+                }
+
+            .landing-page .features h2 {
+                font-size: 2rem;
+                color: #00cccc;
+                margin-bottom: 1rem;
+            }
+
+            .landing-page .features ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                text-align: center;
+            }
+
+                .landing-page .features ul li {
+                    font-size: 1.1rem;
+                    margin-bottom: 0.5rem;
+                }
+            
+        .landing-page {
+            background-color: transparent;
+        }
+
+        .navbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-page">
+        <header>
+            <h1>Welcome to EfficiencyHub</h1>
+            <p>Manage your projects and tasks with ease. Organize, prioritize, and achieve your goals efficiently.</p>
+        </header>
+
+        <section class="cta">
+            <a href="/Identity/Account/Register" class="btn btn-primary">Sign Up</a>
+            <a href="/Identity/Account/Login" class="btn btn-secondary">Log In</a>
+        </section>
+
+        <section class="features">
+            <h2>Features</h2>
+            <ul>
+                <li>Organize projects and track tasks.</li>
+                <li>Set reminders to stay on top of deadlines.</li>
+                <li>View performance reports and activity logs.</li>
+            </ul>
+        </section>
+    </div>
+</body>
+</html>
