@@ -7,7 +7,7 @@ namespace EfficiencyHub
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +46,13 @@ namespace EfficiencyHub
                 app.UseHsts();
             }
 
+            // Seed roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+                await EnsureRolesAsync(roleManager);
+            }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -60,6 +67,18 @@ namespace EfficiencyHub
             app.MapRazorPages();
 
             app.Run();
+        }
+
+        private static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
+        {
+            string[] roleNames = { "User", "Administrator" };
+            foreach (var roleName in roleNames)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+                }
+            }
         }
     }
 }

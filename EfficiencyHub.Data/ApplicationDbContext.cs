@@ -18,5 +18,7 @@ namespace EfficiencyHub.Data
         public virtual DbSet<Project> Projects { get; set; } = null!;
         public virtual DbSet<ActivityLog> ActivityLogs { get; set; } = null!;
         public virtual DbSet<PerformanceReport> PerformanceReports { get; set; } = null!;
+
+        
     }
 }
