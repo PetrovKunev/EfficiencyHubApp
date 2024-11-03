@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
 using Efficiency.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace EfficiencyHub.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

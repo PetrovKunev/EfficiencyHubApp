@@ -1,4 +1,5 @@
-using EfficiencyHub.Data;
+﻿using EfficiencyHub.Data;
+using EfficiencyHub.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +17,20 @@ namespace EfficiencyHub
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-            { 
-                options.SignIn.RequireConfirmedAccount = false; 
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-
+                options.Password.RequireLowercase = false;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddRoles<IdentityRole<Guid>>() // Добавяне на роли с Guid
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
             builder.Services.AddControllersWithViews();
+
 
             var app = builder.Build();
 
@@ -46,6 +51,7 @@ namespace EfficiencyHub
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

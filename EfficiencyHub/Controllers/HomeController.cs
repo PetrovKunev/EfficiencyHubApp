@@ -1,28 +1,32 @@
+﻿using EfficiencyHub.Data.Models;
+using EfficiencyHub.Web.Controllers;
 using EfficiencyHub.Web.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace EfficiencyHub.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<BaseController> logger, UserManager<ApplicationUser> userManager)
+            : base(logger, userManager)
         {
-            _logger = logger;
         }
 
-        public IActionResult LandingPage()
+        public async Task<IActionResult> LandingPage()
         {
+            var currentUser = await GetCurrentUserAsync();
+            // Ако се нуждаете от данни за текущия потребител, можете да ги използвате тук
             return View();
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> About()
         {
+            var currentUser = await GetCurrentUserAsync();
+            // Добавете допълнителна логика, ако трябва да използвате данни за текущия потребител
             return View();
         }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -30,4 +34,5 @@ namespace EfficiencyHub.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
 }
