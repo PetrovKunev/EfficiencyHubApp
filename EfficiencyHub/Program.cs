@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace EfficiencyHub
+namespace EfficiencyHub.Web
 {
     public class Program
     {
