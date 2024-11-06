@@ -1,12 +1,10 @@
 ﻿using EfficiencyHub.Data.Models;
-using EfficiencyHub.Web.Controllers;
 using EfficiencyHub.Web.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace EfficiencyHub.Controllers
+namespace EfficiencyHub.Web.Controllers
 {
     public class HomeController : BaseController
     {
