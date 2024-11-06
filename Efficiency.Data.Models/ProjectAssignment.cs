@@ -1,6 +1,4 @@
-﻿
-using Efficiency.Data.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace EfficiencyHub.Data.Models

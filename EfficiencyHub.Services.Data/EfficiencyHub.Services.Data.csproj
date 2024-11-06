@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Efficiency.Data.Models\EfficiencyHub.Data.Models.csproj" />
+    <ProjectReference Include="..\EfficiencyHub.Common\EfficiencyHub.Common.csproj" />
+    <ProjectReference Include="..\EfficiencyHub.Data\EfficiencyHub.Data.csproj" />
+    <ProjectReference Include="..\EfficiencyHub.Web.ViewModels\EfficiencyHub.Web.ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>

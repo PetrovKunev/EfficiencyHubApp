@@ -1,5 +1,4 @@
-﻿using Efficiency.Data.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace EfficiencyHub.Data.Models
 {

@@ -1,6 +1,7 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Web.Controllers;
 using EfficiencyHub.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -27,6 +28,7 @@ namespace EfficiencyHub.Controllers
             // Добавете допълнителна логика, ако трябва да използвате данни за текущия потребител
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

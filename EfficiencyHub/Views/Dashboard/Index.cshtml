@@ -1,0 +1,25 @@
+﻿@model DashboardViewModel
+
+<h2>Welcome to your Dashboard</h2>
+
+<div>
+    <p>Projects: @Model.ProjectCount</p>
+    <p>Tasks: @Model.TaskCount</p>
+    <p>Completed Tasks: @Model.CompletedTaskCount</p>
+</div>
+
+<h3>Recent Activities</h3>
+<ul>
+    @foreach (var log in Model.RecentActivityLogs)
+    {
+        <li>@log.Description - @log.Timestamp</li>
+    }
+</ul>
+
+<h3>Upcoming Reminders</h3>
+<ul>
+    @foreach (var reminder in Model.UpcomingReminders)
+    {
+        <li>@reminder.Message - @reminder.ReminderDate</li>
+    }
+</ul>

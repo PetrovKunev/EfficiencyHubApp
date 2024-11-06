@@ -1,7 +1,10 @@
 ﻿using EfficiencyHub.Data;
 using EfficiencyHub.Data.Models;
+using EfficiencyHub.Data.Repository;
+using EfficiencyHub.Data.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace EfficiencyHub
 {
@@ -28,6 +31,12 @@ namespace EfficiencyHub
             .AddRoles<IdentityRole<Guid>>() // Добавяне на роли с Guid
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
+            builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
+            builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();
+            builder.Services.AddScoped<IRepository<Reminder>, ReminderRepository>();
+            builder.Services.AddScoped<DashboardService>();
 
             builder.Services.AddControllersWithViews();
 

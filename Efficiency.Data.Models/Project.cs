@@ -1,18 +1,17 @@
 ﻿using EfficiencyHub.Common.Enums;
-using EfficiencyHub.Data.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace Efficiency.Data.Models
+namespace EfficiencyHub.Data.Models
 {
     public class Project
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        
+
         [Required]
-        public string Name { get; set; }  = null!;
+        public string Name { get; set; } = null!;
 
         [Required]
         public string Description { get; set; } = null!;

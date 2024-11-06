@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
-using Efficiency.Data.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace EfficiencyHub.Data
