@@ -1,33 +1,49 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Data;
 
-namespace EfficiencyHub.Data.Repository
+public class ActivityLogRepository : IRepository<ActivityLog>
 {
-    public class ActivityLogRepository : IRepository<ActivityLog>
+    private readonly ApplicationDbContext _context;
+
+    public ActivityLogRepository(ApplicationDbContext context)
     {
-        public Task AddAsync(ActivityLog entity)
-        {
-            throw new NotImplementedException();
-        }
+        _context = context;
+    }
 
-        public Task DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<ActivityLog> GetByIdAsync(Guid id)
+    {
+        return await _context.ActivityLogs.FindAsync(id);
+    }
 
-        public Task<IEnumerable<ActivityLog>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<IEnumerable<ActivityLog>> GetAllAsync()
+    {
+        return await _context.ActivityLogs.ToListAsync();
+    }
 
-        public Task<ActivityLog> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task AddAsync(ActivityLog entity)
+    {
+        await _context.ActivityLogs.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
 
-        public Task UpdateAsync(ActivityLog entity)
+    public async Task UpdateAsync(ActivityLog entity)
+    {
+        _context.ActivityLogs.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var activityLog = await GetByIdAsync(id);
+        if (activityLog != null)
         {
-            throw new NotImplementedException();
+            _context.ActivityLogs.Remove(activityLog);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,6 +1,10 @@
-﻿using EfficiencyHub.Data.Repository.Interfaces;
-using EfficiencyHub.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
+using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Data;
 
 public class ProjectRepository : IRepository<Project>
 {
@@ -11,28 +15,36 @@ public class ProjectRepository : IRepository<Project>
         _context = context;
     }
 
-    public Task AddAsync(Project entity)
+    public async Task<Project> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await _context.Projects.FindAsync(id);
+        return result ?? new Project();
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task<IEnumerable<Project>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Projects.ToListAsync();
     }
 
-    public Task<IEnumerable<Project>> GetAllAsync()
+    public async Task AddAsync(Project entity)
     {
-        throw new NotImplementedException();
+        await _context.Projects.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public Task<Project> GetByIdAsync(Guid id)
+    public async Task UpdateAsync(Project entity)
     {
-        throw new NotImplementedException();
+        _context.Projects.Update(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public Task UpdateAsync(Project entity)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var project = await GetByIdAsync(id);
+        if (project != null)
+        {
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+        }
     }
 }

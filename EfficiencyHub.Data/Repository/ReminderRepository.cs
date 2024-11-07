@@ -1,33 +1,51 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Data;
 
-namespace EfficiencyHub.Data.Repository
+public class ReminderRepository : IRepository<Reminder>
 {
-    public class ReminderRepository : IRepository<Reminder>
+    private readonly ApplicationDbContext _context;
+
+    public ReminderRepository(ApplicationDbContext context)
     {
-        public Task AddAsync(Reminder entity)
-        {
-            throw new NotImplementedException();
-        }
+        _context = context;
+    }
 
-        public Task DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<Reminder> GetByIdAsync(Guid id)
+    {
+        var result = await _context.Reminders.FindAsync(id);
+        return result ?? new Reminder(); 
+    }
 
-        public Task<IEnumerable<Reminder>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<Reminder> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<IEnumerable<Reminder>> GetAllAsync()
+    {
+        return await _context.Reminders.ToListAsync();
+    }
 
-        public Task UpdateAsync(Reminder entity)
+    public async Task AddAsync(Reminder entity)
+    {
+        await _context.Reminders.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Reminder entity)
+    {
+        _context.Reminders.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var reminder = await GetByIdAsync(id);
+        if (reminder != null)
         {
-            throw new NotImplementedException();
+            _context.Reminders.Remove(reminder);
+            await _context.SaveChangesAsync();
         }
     }
 }

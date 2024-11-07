@@ -1,5 +1,7 @@
 ﻿@model DashboardViewModel
-
+@{
+    ViewData["Title"] = "Dashboard";
+}
 <h2>Welcome to your Dashboard</h2>
 
 <div>
@@ -8,7 +10,7 @@
     <p>Completed Tasks: @Model.CompletedTaskCount</p>
 </div>
 
-<h3>Recent Activities</h3>
+<h3>Recent Activities:</h3>
 <ul>
     @foreach (var log in Model.RecentActivityLogs)
     {
@@ -16,7 +18,7 @@
     }
 </ul>
 
-<h3>Upcoming Reminders</h3>
+<h3>Upcoming Reminders:</h3>
 <ul>
     @foreach (var reminder in Model.UpcomingReminders)
     {

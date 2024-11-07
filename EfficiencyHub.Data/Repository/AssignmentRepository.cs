@@ -1,33 +1,51 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Data;
 
-namespace EfficiencyHub.Data.Repository
+public class AssignmentRepository : IRepository<Assignment>
 {
-    public class AssignmentRepository : IRepository<Assignment>
+    private readonly ApplicationDbContext _context;
+
+    public AssignmentRepository(ApplicationDbContext context)
     {
-        public Task AddAsync(Assignment entity)
-        {
-            throw new NotImplementedException();
-        }
+        _context = context;
+    }
 
-        public Task DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<Assignment> GetByIdAsync(Guid id)
+    {
+        var result = await _context.Tasks.FindAsync(id);
+        return result ?? new Assignment();
+    }
 
-        public Task<IEnumerable<Assignment>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<Assignment> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<IEnumerable<Assignment>> GetAllAsync()
+    {
+        return await _context.Tasks.ToListAsync();
+    }
 
-        public Task UpdateAsync(Assignment entity)
+    public async Task AddAsync(Assignment entity)
+    {
+        await _context.Tasks.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Assignment entity)
+    {
+        _context.Tasks.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var assignment = await GetByIdAsync(id);
+        if (assignment != null)
         {
-            throw new NotImplementedException();
+            _context.Tasks.Remove(assignment);
+            await _context.SaveChangesAsync();
         }
     }
 }
