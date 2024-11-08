@@ -2,9 +2,11 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
-<h2>Welcome to your Dashboard</h2>
+<h2><u>Welcome to your Dashboard</u></h2>
 
 <div>
+    <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy  HH:mm")</p>
+    <br />
     <p>Projects: @Model.ProjectCount</p>
     <p>Tasks: @Model.TaskCount</p>
     <p>Completed Tasks: @Model.CompletedTaskCount</p>
