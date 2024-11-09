@@ -1,0 +1,36 @@
+﻿@* @model IEnumerable<EfficiencyHub.Data.Models.Project>
+
+<h2>Projects List</h2>
+
+<a asp-action="Create" class="btn btn-primary">Create New Project</a>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var project in Model)
+        {
+            <tr>
+                <td>@project.Name</td>
+                <td>@project.Description</td>
+                <td>@project.StartDate.ToShortDateString()</td>
+                <td>@project.EndDate.ToShortDateString()</td>
+                <td>@project.Status</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-info btn-sm">View</a>
+                    <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+ *@
