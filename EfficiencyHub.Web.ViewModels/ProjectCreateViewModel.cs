@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EfficiencyHub.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,20 +12,20 @@ namespace EfficiencyHub.Web.ViewModels
     public class ProjectCreateViewModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = "The name must be between 3 and 100 characters.", MinimumLength = 3)]
-        public string Name { get; set; }
+        [StringLength(100, ErrorMessage = ValidationMessages.NameLength, MinimumLength = 3)]
+        public required string Name { get; set; }
 
         [Required]
-        [StringLength(500, ErrorMessage = "The description must be between 10 and 500 characters.", MinimumLength = 10)]
-        public string Description { get; set; }
+        [StringLength(500, ErrorMessage = ValidationMessages.DescriptionLength, MinimumLength = 10)]
+        public required string Description { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
-        //[Required]
-        //[DataType(DataType.Date)]
-        //[DateGreaterThan("StartDate", ErrorMessage = "End date must be after the start date.")]
-        //public DateTime EndDate { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        [DateGreaterThan("StartDate", ErrorMessage = ValidationMessages.EndDateAfterStartDate)]
+        public DateTime EndDate { get; set; }
     }
 }

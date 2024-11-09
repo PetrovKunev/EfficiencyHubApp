@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EfficiencyHub.Data.Models;
-using System;
-using System.Threading.Tasks;
 using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,7 +1,7 @@
 ﻿using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using static EfficiencyHub.Common.EntityValidationConstants;
 
 namespace EfficiencyHub.Data.Models
 {
@@ -11,9 +11,13 @@ namespace EfficiencyHub.Data.Models
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
+        [MinLength(NameMinLength)]
+        [MaxLength(NameMaxLength)]
         public string Name { get; set; } = null!;
 
         [Required]
+        [MinLength(DescriptionMinLength)]
+        [MaxLength(DescriptionMaxLength)]
         public string Description { get; set; } = null!;
 
         [Required]

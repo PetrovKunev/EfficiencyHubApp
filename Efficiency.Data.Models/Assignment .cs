@@ -1,5 +1,6 @@
 ﻿using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
+using static EfficiencyHub.Common.EntityValidationConstants;
 
 namespace EfficiencyHub.Data.Models
 {
@@ -7,9 +8,14 @@ namespace EfficiencyHub.Data.Models
     {
         [Key]
         public Guid Id { get; set; }
+        
         [Required]
+        [MinLength(NameMinLength)]
+        [MaxLength(NameMaxLength)]
         public string Title { get; set; } = null!;
         [Required]
+        [MinLength(DescriptionMinLength)]
+        [MaxLength(DescriptionMaxLength)]
         public string Description { get; set; } = null!;
         [Required]
         public DateTime DueDate { get; set; }
