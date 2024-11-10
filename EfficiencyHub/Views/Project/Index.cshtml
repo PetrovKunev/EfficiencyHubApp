@@ -1,16 +1,23 @@
-﻿@* @model IEnumerable<EfficiencyHub.Data.Models.Project>
+﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.ProjectViewModel>
 
-<h2>Projects List</h2>
+@{
+    ViewData["Title"] = "Projects List";
+}
 
-<a asp-action="Create" class="btn btn-primary">Create New Project</a>
+<h1>Projects List</h1>
 
-<table class="table table-striped mt-3">
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">Create New Project</a>
+</div>
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
             <th>Description</th>
             <th>Start Date</th>
             <th>End Date</th>
+            <th>Role</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -21,16 +28,19 @@
             <tr>
                 <td>@project.Name</td>
                 <td>@project.Description</td>
-                <td>@project.StartDate.ToShortDateString()</td>
-                <td>@project.EndDate.ToShortDateString()</td>
-                <td>@project.Status</td>
+                <td>@project.StartDate.ToString("yyyy-MM-dd")</td>
+                <td>@project.EndDate.ToString("yyyy-MM-dd")</td>
+                <td>@project.Role</td>
+                <td>@(project.IsDeleted ? "Deleted" : "Active")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-info btn-sm">View</a>
                     <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-danger btn-sm">Delete</a>
+                    @if (!project.IsDeleted)
+                    {
+                        <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-danger btn-sm">Delete</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
- *@

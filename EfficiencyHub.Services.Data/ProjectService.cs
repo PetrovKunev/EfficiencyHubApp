@@ -1,5 +1,6 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Web.ViewModels;
 
 namespace EfficiencyHub.Services.Data
 {
@@ -12,53 +13,43 @@ namespace EfficiencyHub.Services.Data
             _projectRepository = projectRepository;
         }
 
-        public async Task<IEnumerable<Project>> GetProjectsForUserAsync(Guid userId)
+        public async Task<bool> CreateProjectAsync(ProjectCreateViewModel model, Guid userId)
         {
-            var allProjects = await _projectRepository.GetAllAsync();
-            return allProjects.Where(p => p.UserId == userId && !p.IsDeleted);
-        }
-
-        public async Task<Project> GetProjectByIdAsync(Guid id)
-        {
-            return await _projectRepository.GetByIdAsync(id);
-        }
-
-        public async Task<bool> CreateProjectAsync(Project project, Guid userId)
-        {
-            if (project == null)
+            if (model == null || userId == Guid.Empty)
             {
                 return false;
             }
 
-            project.UserId = userId;
+            var project = new Project
+            {
+                Name = model.Name,
+                Description = model.Description,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Role = model.Role,
+                UserId = userId,
+                IsDeleted = false
+            };
+
             await _projectRepository.AddAsync(project);
             return true;
         }
 
-        public async Task<bool> UpdateProjectAsync(Project project)
+        public async Task<IEnumerable<ProjectViewModel>> GetProjectsForUserAsync(Guid userId)
         {
-            if (project == null || project.Id == Guid.Empty)
-            {
-                return false;
-            }
-
-            await _projectRepository.UpdateAsync(project);
-            return true;
+            var projects = await _projectRepository.GetAllAsync();
+            return projects
+                .Where(p => p.UserId == userId && !p.IsDeleted)
+                .Select(p => new ProjectViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    StartDate = p.StartDate,
+                    EndDate = p.EndDate,
+                    Role = p.Role,
+                    IsDeleted = p.IsDeleted
+                }).ToList();
         }
-
-        public async Task<bool> DeleteProjectAsync(Guid id)
-        {
-            var project = await _projectRepository.GetByIdAsync(id);
-            if (project == null)
-            {
-                return false;
-            }
-
-            project.IsDeleted = true;
-            await _projectRepository.UpdateAsync(project);
-            return true;
-        }
-
     }
-
 }

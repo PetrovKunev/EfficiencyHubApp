@@ -2,6 +2,7 @@
 using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
+using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,10 +29,11 @@ namespace EfficiencyHub.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase = false;
             })
-            .AddRoles<IdentityRole<Guid>>() // Добавяне на роли с Guid
+            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            builder.Services.AddScoped<ProjectService>();
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
             builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();

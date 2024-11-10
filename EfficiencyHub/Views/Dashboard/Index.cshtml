@@ -4,6 +4,12 @@
 }
 <h2><u>Welcome to your Dashboard</u></h2>
 
+<div class="mb-4">
+    <a asp-controller="Project" asp-action="Index" class="btn btn-primary">
+        View My Projects
+    </a>
+</div>
+
 <div>
     <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy  HH:mm")</p>
     <br />

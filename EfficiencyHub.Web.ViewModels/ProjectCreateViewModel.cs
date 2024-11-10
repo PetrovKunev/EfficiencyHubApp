@@ -1,23 +1,20 @@
 ﻿using EfficiencyHub.Common;
-using System;
-using System.Collections.Generic;
+using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EfficiencyHub.Web.ViewModels
 {
-    //за доработка валидации
-    public class ProjectCreateViewModel
+    
+public class ProjectCreateViewModel
     {
         [Required]
         [StringLength(100, ErrorMessage = ValidationMessages.NameLength, MinimumLength = 3)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [StringLength(500, ErrorMessage = ValidationMessages.DescriptionLength, MinimumLength = 10)]
-        public required string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Date)]
@@ -27,5 +24,10 @@ namespace EfficiencyHub.Web.ViewModels
         [DataType(DataType.Date)]
         [DateGreaterThan("StartDate", ErrorMessage = ValidationMessages.EndDateAfterStartDate)]
         public DateTime EndDate { get; set; }
+
+        [Required]
+        public ProjectRole Role { get; set; }
+
+        public IEnumerable<ProjectRole> AvailableRoles { get; set; } = Enum.GetValues(typeof(ProjectRole)).Cast<ProjectRole>();
     }
 }
