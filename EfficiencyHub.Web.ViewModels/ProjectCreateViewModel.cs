@@ -1,6 +1,7 @@
 ﻿using EfficiencyHub.Common;
 using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
+using static EfficiencyHub.Common.EntityValidationConstants;
 
 
 namespace EfficiencyHub.Web.ViewModels
@@ -9,11 +10,14 @@ namespace EfficiencyHub.Web.ViewModels
 public class ProjectCreateViewModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = ValidationMessages.NameLength, MinimumLength = 3)]
+        [MinLength(NameMinLength, ErrorMessage = ValidationMessages.NameLength)]
+        [MaxLength(NameMaxLength, ErrorMessage = ValidationMessages.NameLength)]
+
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(500, ErrorMessage = ValidationMessages.DescriptionLength, MinimumLength = 10)]
+        [MinLength(DescriptionMinLength, ErrorMessage = ValidationMessages.DescriptionLength)]
+        [MaxLength(DescriptionMaxLength, ErrorMessage = ValidationMessages.DescriptionLength)]
         public string Description { get; set; } = string.Empty;
 
         [Required]
