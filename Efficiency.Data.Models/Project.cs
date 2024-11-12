@@ -36,7 +36,6 @@ namespace EfficiencyHub.Data.Models
 
         public ICollection<ProjectAssignment> ProjectAssignments { get; set; } = new List<ProjectAssignment>();
 
-        //Soft delete
         public bool IsDeleted { get; set; }
     }
 }

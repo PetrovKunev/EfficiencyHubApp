@@ -16,14 +16,14 @@ namespace EfficiencyHub.Web.Controllers
         public async Task<IActionResult> LandingPage()
         {
             var currentUser = await GetCurrentUserAsync();
-            // Ако се нуждаете от данни за текущия потребител, можете да ги използвате тук
+            
             return View();
         }
 
         public async Task<IActionResult> About()
         {
             var currentUser = await GetCurrentUserAsync();
-            // Добавете допълнителна логика, ако трябва да използвате данни за текущия потребител
+            
             return View();
         }
 

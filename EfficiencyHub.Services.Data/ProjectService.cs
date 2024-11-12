@@ -51,5 +51,62 @@ namespace EfficiencyHub.Services.Data
                     IsDeleted = p.IsDeleted
                 }).ToList();
         }
+
+        public async Task<ProjectDetailsViewModel?> GetProjectByIdAsync(Guid projectId, Guid userId)
+        {
+            var project = await _projectRepository.GetByIdAsync(projectId);
+            if (project == null || project.UserId != userId || project.IsDeleted)
+            {
+                return null;
+            }
+
+            return new ProjectDetailsViewModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Role = project.Role,
+                Status = project.IsDeleted ? "Deleted" : "Active"
+            };
+        }
+
+        public async Task<ProjectEditViewModel?> GetProjectForEditAsync(Guid projectId, Guid userId)
+        {
+            var project = await _projectRepository.GetByIdAsync(projectId);
+            if (project == null || project.UserId != userId || project.IsDeleted)
+            {
+                return null;
+            }
+
+            return new ProjectEditViewModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Role = project.Role
+            };
+        }
+
+        public async Task<bool> UpdateProjectAsync(ProjectEditViewModel model, Guid userId)
+        {
+            var project = await _projectRepository.GetByIdAsync(model.Id);
+            if (project == null || project.UserId != userId || project.IsDeleted)
+            {
+                return false;
+            }
+
+            project.Name = model.Name;
+            project.Description = model.Description;
+            project.StartDate = model.StartDate;
+            project.EndDate = model.EndDate;
+            project.Role = model.Role;
+
+            await _projectRepository.UpdateAsync(project);
+            return true;
+        }
     }
 }

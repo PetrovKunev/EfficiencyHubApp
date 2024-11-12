@@ -1,32 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Common;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using static EfficiencyHub.Common.EntityValidationConstants;
 
 namespace EfficiencyHub.Web.ViewModels
 {
-    //за доработка валидации
     public class ProjectEditViewModel
     {
         public Guid Id { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The name must be between 3 and 100 characters.", MinimumLength = 3)]
-        public string Name { get; set; }
+        [MinLength(NameMinLength, ErrorMessage = ValidationMessages.NameLength)]
+        [MaxLength(NameMaxLength, ErrorMessage = ValidationMessages.NameLength)]
+        public string Name { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(500, ErrorMessage = "The description must be between 10 and 500 characters.", MinimumLength = 10)]
-        public string Description { get; set; }
+        [MinLength(DescriptionMinLength, ErrorMessage = ValidationMessages.DescriptionLength)]
+        [MaxLength(DescriptionMaxLength, ErrorMessage = ValidationMessages.DescriptionLength)]
+        public string Description { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
-        //[Required]
-        //[DataType(DataType.Date)]
-        //[DateGreaterThan("StartDate", ErrorMessage = "End date must be after the start date.")]
-        //public DateTime EndDate { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        [DateGreaterThan("StartDate", ErrorMessage = ValidationMessages.EndDateAfterStartDate)]
+        public DateTime EndDate { get; set; }
+
+        [Required]
+        public ProjectRole Role { get; set; }
+
+        public List<ProjectRole> AvailableRoles { get; set; } = new List<ProjectRole>();
     }
 }

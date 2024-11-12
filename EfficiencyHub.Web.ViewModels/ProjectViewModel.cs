@@ -2,7 +2,6 @@
 
 namespace EfficiencyHub.Web.ViewModels
 {
-    //за доработка
     public class ProjectViewModel
     {
         public Guid Id { get; set; }
