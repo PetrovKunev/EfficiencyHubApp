@@ -2,8 +2,8 @@
 
 namespace EfficiencyHub.Web.Infrastructure.Data
 {
-    //public static class DbInitializer
-    //{
+    public static class DbInitializer
+    {
     //    public static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
     //    {
     //        string[] roleNames = { "User", "Administrator" };
@@ -15,5 +15,5 @@ namespace EfficiencyHub.Web.Infrastructure.Data
     //            }
     //        }
     //    }
-    //}
+    }
 }
