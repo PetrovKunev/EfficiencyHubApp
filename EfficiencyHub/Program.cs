@@ -4,7 +4,9 @@ using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 
 namespace EfficiencyHub.Web
@@ -80,6 +82,7 @@ namespace EfficiencyHub.Web
             app.Run();
         }
 
+        //find another place for this
         private static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
             string[] roleNames = { "User", "Administrator" };
@@ -91,5 +94,6 @@ namespace EfficiencyHub.Web
                 }
             }
         }
+
     }
 }
