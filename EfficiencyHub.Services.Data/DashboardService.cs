@@ -26,9 +26,11 @@ public class DashboardService
         var activityLogs = await _activityLogRepository.GetAllAsync();
         var reminders = await _reminderRepository.GetAllAsync();
 
+        var activeProjects = projects.Where(p => !p.IsDeleted);
+
         return new DashboardViewModel
         {
-            ProjectCount = projects.Count(),
+            ProjectCount = activeProjects.Count(),
             TaskCount = tasks.Count(),
             CompletedTaskCount = tasks.Count(t => t.Status == AssignmentStatus.Completed),
             RecentActivityLogs = activityLogs.OrderByDescending(a => a.Timestamp).Take(5),

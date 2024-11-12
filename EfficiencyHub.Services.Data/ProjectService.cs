@@ -108,5 +108,19 @@ namespace EfficiencyHub.Services.Data
             await _projectRepository.UpdateAsync(project);
             return true;
         }
+
+        public async Task<bool> DeleteProjectAsync(Guid projectId, Guid userId)
+        {
+            var project = await _projectRepository.GetByIdAsync(projectId);
+            if (project == null || project.UserId != userId || project.IsDeleted)
+            {
+                return false;
+            }
+
+            project.IsDeleted = true;
+            await _projectRepository.UpdateAsync(project);
+            return true;
+        }
+
     }
 }

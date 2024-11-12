@@ -135,5 +135,25 @@ namespace EfficiencyHub.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var success = await _projectService.DeleteProjectAsync(id, user.Id);
+            if (!success)
+            {
+                ModelState.AddModelError("", "Unable to delete project. Please try again.");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
     }
 }
