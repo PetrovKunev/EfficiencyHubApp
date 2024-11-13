@@ -1,0 +1,29 @@
+﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.AssignmentViewModel>
+@{
+    ViewData["Title"] = "Assignments";
+}
+
+<h2>Assignments for Project</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var assignment in Model)
+        {
+            <tr>
+                <td>@assignment.Title</td>
+                <td>@assignment.Description</td>
+                <td>@assignment.DueDate.ToShortDateString()</td>
+                <td>@assignment.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Add New Assignment</a>

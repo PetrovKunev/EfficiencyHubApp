@@ -36,12 +36,15 @@ namespace EfficiencyHub.Web
             .AddDefaultTokenProviders();
 
             // Configure the Localization - set the default culture; another class for this for optimization
-            builder.Services.AddScoped<ProjectService>();
+            
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
             builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();
             builder.Services.AddScoped<IRepository<Reminder>, ReminderRepository>();
+            builder.Services.AddScoped<IRepository<ProjectAssignment>, ProjectAssignmentRepository>();
             builder.Services.AddScoped<DashboardService>();
+            builder.Services.AddScoped<ProjectService>();
+            builder.Services.AddScoped<AssignmentService>();
 
             builder.Services.AddControllersWithViews();
 

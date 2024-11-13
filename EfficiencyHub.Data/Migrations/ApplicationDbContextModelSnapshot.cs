@@ -46,7 +46,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityLogs");
+                    b.ToTable("ActivityLogs", (string)null);
                 });
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.ApplicationUser", b =>
@@ -142,7 +142,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.PerformanceReport", b =>
@@ -168,7 +168,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PerformanceReports");
+                    b.ToTable("PerformanceReports", (string)null);
                 });
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.Project", b =>
@@ -206,7 +206,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.ProjectAssignment", b =>
@@ -226,7 +226,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectAssignment");
+                    b.ToTable("ProjectAssignment", (string)null);
                 });
 
             modelBuilder.Entity("EfficiencyHub.Data.Models.Reminder", b =>
@@ -254,7 +254,7 @@ namespace EfficiencyHub.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reminders");
+                    b.ToTable("Reminders", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>

@@ -1,5 +1,5 @@
-﻿using EfficiencyHub.Common.Enums;
-using System;
+﻿using EfficiencyHub.Common;
+using EfficiencyHub.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using static EfficiencyHub.Common.EntityValidationConstants;
 
@@ -7,12 +7,16 @@ namespace EfficiencyHub.Web.ViewModels
 {
     public class AssignmentCreateViewModel
     {
+        public Guid ProjectId { get; set; }
+
         [Required]
-        [StringLength(NameMaxLength, MinimumLength = NameMinLength, ErrorMessage = "Title length should be between {2} and {1} characters.")]
+        [MinLength(NameMinLength, ErrorMessage = ValidationMessages.NameLength)]
+        [MaxLength(NameMaxLength, ErrorMessage = ValidationMessages.NameLength)]
         public string Title { get; set; } = null!;
 
         [Required]
-        [StringLength(DescriptionMaxLength, MinimumLength = DescriptionMinLength, ErrorMessage = "Description length should be between {2} and {1} characters.")]
+        [MinLength(DescriptionMinLength, ErrorMessage = ValidationMessages.DescriptionLength)]
+        [MaxLength(DescriptionMaxLength, ErrorMessage = ValidationMessages.DescriptionLength)]
         public string Description { get; set; } = null!;
 
         [Required]
