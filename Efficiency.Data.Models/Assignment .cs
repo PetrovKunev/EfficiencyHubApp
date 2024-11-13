@@ -7,8 +7,8 @@ namespace EfficiencyHub.Data.Models
     public class Assignment
     {
         [Key]
-        public Guid Id { get; set; }
-        
+        public Guid Id { get; set; } = Guid.NewGuid();
+
         [Required]
         [MinLength(NameMinLength)]
         [MaxLength(NameMaxLength)]
@@ -25,7 +25,6 @@ namespace EfficiencyHub.Data.Models
 
         public ICollection<ProjectAssignment> ProjectAssignments { get; set; } = new List<ProjectAssignment>();
 
-        //Soft delete
         public bool IsDeleted { get; set; }
     }
 }

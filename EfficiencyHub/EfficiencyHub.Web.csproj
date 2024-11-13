@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Assignment\" />
     <Folder Include="wwwroot\img\" />
   </ItemGroup>
 

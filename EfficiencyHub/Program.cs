@@ -35,6 +35,7 @@ namespace EfficiencyHub.Web
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            // Configure the Localization - set the default culture; another class for this for optimization
             builder.Services.AddScoped<ProjectService>();
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
@@ -82,7 +83,7 @@ namespace EfficiencyHub.Web
             app.Run();
         }
 
-        //find another place for this
+        // Find another place for this
         private static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
             string[] roleNames = { "User", "Administrator" };
