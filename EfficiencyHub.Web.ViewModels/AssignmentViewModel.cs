@@ -1,5 +1,4 @@
 ﻿using EfficiencyHub.Common.Enums;
-using System;
 
 namespace EfficiencyHub.Web.ViewModels
 {

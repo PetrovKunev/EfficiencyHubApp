@@ -33,7 +33,11 @@ namespace EfficiencyHub.Web.Controllers
             try
             {
                 var assignments = await _assignmentService.GetAssignmentsForProjectAsync(projectId);
+                var projectName = await _assignmentService.GetProjectNameAsync(projectId);
+
                 ViewBag.ProjectId = projectId;
+                ViewBag.ProjectName = projectName;
+
                 return View(assignments);
             }
             catch (Exception ex)
@@ -43,12 +47,14 @@ namespace EfficiencyHub.Web.Controllers
             }
         }
 
+
         [HttpGet]
         public IActionResult Create(Guid projectId)
         {
             var viewModel = new AssignmentCreateViewModel
             {
-                DueDate = DateTime.Now.AddDays(7) // Default due date, for example
+                ProjectId = projectId,
+                DueDate = DateTime.Now.AddDays(7)
             };
             ViewBag.ProjectId = projectId;
             return View(viewModel);
@@ -64,7 +70,7 @@ namespace EfficiencyHub.Web.Controllers
                 return View(model);
             }
 
-            var user = await GetCurrentUserAsync();
+            var user = await _userManager.GetUserAsync(User); // Вземаме текущия потребител
             if (user == null)
             {
                 return Unauthorized();
@@ -72,7 +78,8 @@ namespace EfficiencyHub.Web.Controllers
 
             try
             {
-                var success = await _assignmentService.CreateAssignmentAsync(model, projectId);
+                // Предаваме UserId на текущия потребител към сервиза
+                var success = await _assignmentService.CreateAssignmentAsync(model, projectId, user.Id);
                 if (!success)
                 {
                     ModelState.AddModelError("", "Unable to create assignment. Please try again.");
@@ -90,5 +97,7 @@ namespace EfficiencyHub.Web.Controllers
                 return View(model);
             }
         }
+
+
     }
 }

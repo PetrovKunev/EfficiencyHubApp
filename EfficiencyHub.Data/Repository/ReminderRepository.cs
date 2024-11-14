@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Data;
+using System.Linq.Expressions;
 
 public class ReminderRepository : IRepository<Reminder>
 {
@@ -47,5 +45,10 @@ public class ReminderRepository : IRepository<Reminder>
             _context.Reminders.Remove(reminder);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<IEnumerable<Reminder>> GetWhereAsync(Expression<Func<Reminder, bool>> predicate)
+    {
+        return await _context.Reminders.Where(predicate).ToListAsync();
     }
 }

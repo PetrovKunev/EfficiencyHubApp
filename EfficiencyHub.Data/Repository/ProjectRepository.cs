@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Data;
+using System.Linq.Expressions;
 
 public class ProjectRepository : IRepository<Project>
 {
@@ -46,5 +44,10 @@ public class ProjectRepository : IRepository<Project>
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<IEnumerable<Project>> GetWhereAsync(Expression<Func<Project, bool>> predicate)
+    {
+        return await _context.Projects.Where(predicate).ToListAsync();
     }
 }

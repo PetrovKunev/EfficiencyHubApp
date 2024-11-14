@@ -1,4 +1,4 @@
-﻿
+﻿using System.Linq.Expressions;
 
 namespace EfficiencyHub.Data.Repository.Interfaces
 {
@@ -6,6 +6,7 @@ namespace EfficiencyHub.Data.Repository.Interfaces
     {
         Task<T> GetByIdAsync(Guid id);
         Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetWhereAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(Guid id);

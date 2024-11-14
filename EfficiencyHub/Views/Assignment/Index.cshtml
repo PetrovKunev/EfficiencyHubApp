@@ -3,7 +3,7 @@
     ViewData["Title"] = "Assignments";
 }
 
-<h2>Assignments for Project</h2>
+<h2>Assignments for Project: @ViewBag.ProjectName</h2>
 
 <table class="table">
     <thead>
@@ -27,3 +27,7 @@
     </tbody>
 </table>
 <a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Add New Assignment</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

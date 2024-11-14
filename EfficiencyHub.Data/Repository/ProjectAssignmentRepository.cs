@@ -1,6 +1,7 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EfficiencyHub.Data.Repository
 {
@@ -43,6 +44,14 @@ namespace EfficiencyHub.Data.Repository
                 _context.ProjectAssignments.Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<ProjectAssignment>> GetWhereAsync(Expression<Func<ProjectAssignment, bool>> predicate)
+        {
+            return await _context.ProjectAssignments
+                .Include(pa => pa.Assignment) // Include related Assignment entities
+                .Where(predicate)
+                .ToListAsync();
         }
     }
 }

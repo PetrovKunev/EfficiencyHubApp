@@ -12,32 +12,40 @@ namespace EfficiencyHub.Services.Data
     {
         private readonly IRepository<Assignment> _assignmentRepository;
         private readonly IRepository<ProjectAssignment> _projectAssignmentRepository;
+        private readonly IRepository<Project> _projectRepository;
 
-        public AssignmentService(IRepository<Assignment> assignmentRepository, IRepository<ProjectAssignment> projectAssignmentRepository)
+        public AssignmentService(
+            IRepository<Assignment> assignmentRepository,
+            IRepository<ProjectAssignment> projectAssignmentRepository,
+            IRepository<Project> projectRepository)
         {
             _assignmentRepository = assignmentRepository;
             _projectAssignmentRepository = projectAssignmentRepository;
+            _projectRepository = projectRepository;
         }
 
         public async Task<IEnumerable<AssignmentViewModel>> GetAssignmentsForProjectAsync(Guid projectId)
         {
-            var projectAssignments = await _projectAssignmentRepository.GetAllAsync();
-            var assignments = projectAssignments
-                .Where(pa => pa.ProjectId == projectId && !pa.Assignment.IsDeleted)
-                .Select(pa => new AssignmentViewModel
-                {
-                    Id = pa.Assignment.Id,
-                    Title = pa.Assignment.Title,
-                    Description = pa.Assignment.Description,
-                    DueDate = pa.Assignment.DueDate,
-                    Status = pa.Assignment.Status
-                })
-                .ToList();
+            var projectAssignments = await _projectAssignmentRepository.GetWhereAsync(pa => pa.ProjectId == projectId && !pa.Assignment.IsDeleted);
 
-            return assignments;
+            return projectAssignments.Select(pa => new AssignmentViewModel
+            {
+                Id = pa.Assignment.Id,
+                Title = pa.Assignment.Title,
+                Description = pa.Assignment.Description,
+                DueDate = pa.Assignment.DueDate,
+                Status = pa.Assignment.Status,
+                IsDeleted = pa.Assignment.IsDeleted
+            }).ToList();
         }
 
-        public async Task<bool> CreateAssignmentAsync(AssignmentCreateViewModel model, Guid projectId)
+        public async Task<string> GetProjectNameAsync(Guid projectId)
+        {
+            var project = await _projectRepository.GetByIdAsync(projectId);
+            return project?.Name ?? "Project";
+        }
+
+        public async Task<bool> CreateAssignmentAsync(AssignmentCreateViewModel model, Guid projectId, Guid userId)
         {
             if (model == null || projectId == Guid.Empty)
             {
@@ -53,17 +61,25 @@ namespace EfficiencyHub.Services.Data
                 IsDeleted = false
             };
 
-            await _assignmentRepository.AddAsync(assignment);
-
-            // Link assignment to the project
-            var projectAssignment = new ProjectAssignment
+            try
             {
-                ProjectId = projectId,
-                AssignmentId = assignment.Id
-            };
+                await _assignmentRepository.AddAsync(assignment);
 
-            await _projectAssignmentRepository.AddAsync(projectAssignment);
-            return true;
+                var projectAssignment = new ProjectAssignment
+                {
+                    ProjectId = projectId,
+                    AssignmentId = assignment.Id,
+                    UserId = userId
+                };
+
+                await _projectAssignmentRepository.AddAsync(projectAssignment);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
+
     }
 }

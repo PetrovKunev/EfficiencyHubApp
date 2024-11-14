@@ -1,6 +1,10 @@
 ﻿@using EfficiencyHub.Common.Enums;
 @model EfficiencyHub.Web.ViewModels.AssignmentCreateViewModel
 
+@{
+    ViewData["Title"] = "Create Assignment";
+}
+
 <h2>Create New Assignment</h2>
 
 <form asp-action="Create" method="post">
@@ -9,14 +13,17 @@
     <div class="form-group">
         <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Description"></label>
         <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="DueDate"></label>
         <input asp-for="DueDate" class="form-control" type="date" />
+        <span asp-validation-for="DueDate" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Status"></label>
@@ -26,7 +33,12 @@
                 <option value="@status">@status</option>
             }
         </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
-
+    <br />
     <button type="submit" class="btn btn-primary">Create Assignment</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
