@@ -81,5 +81,98 @@ namespace EfficiencyHub.Services.Data
             }
         }
 
+
+        public async Task<AssignmentEditViewModel> GetAssignmentByIdAsync(Guid projectId, Guid assignmentId)
+        {
+            var projectAssignments = await _projectAssignmentRepository
+                .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);
+
+            var projectAssignment = projectAssignments.FirstOrDefault();
+
+            if (projectAssignment == null || projectAssignment.Assignment.IsDeleted)
+            {
+                return null;
+            }
+
+            return new AssignmentEditViewModel
+            {
+                Id = projectAssignment.Assignment.Id,
+                Title = projectAssignment.Assignment.Title,
+                Description = projectAssignment.Assignment.Description,
+                DueDate = projectAssignment.Assignment.DueDate,
+                Status = projectAssignment.Assignment.Status,
+                ProjectId = projectAssignment.ProjectId // Увери се, че задава ProjectId
+            };
+        }
+
+
+        public async Task<bool> UpdateAssignmentAsync(AssignmentEditViewModel model)
+        {
+            if (model == null || model.Id == Guid.Empty)
+            {
+                return false;
+            }
+
+            var projectAssignment = await _projectAssignmentRepository
+                .GetWhereAsync(pa => pa.AssignmentId == model.Id);
+
+            if (!projectAssignment.Any())
+            {
+                return false;
+            }
+
+            var assignment = projectAssignment.First().Assignment;
+            if (assignment == null)
+            {
+                return false;
+            }
+
+            assignment.Title = model.Title;
+            assignment.Description = model.Description;
+            assignment.DueDate = model.DueDate;
+            assignment.Status = model.Status;
+
+            try
+            {
+                await _assignmentRepository.UpdateAsync(assignment);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SoftDeleteAssignmentAsync(Guid projectId, Guid assignmentId)
+        {
+            if (projectId == Guid.Empty || assignmentId == Guid.Empty)
+            {
+                return false;
+            }
+
+            var projectAssignment = await _projectAssignmentRepository
+                .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);
+
+            var assignment = projectAssignment.FirstOrDefault()?.Assignment;
+
+            if (assignment == null)
+            {
+                return false;
+            }
+
+            assignment.IsDeleted = true;
+
+            try
+            {
+                await _assignmentRepository.UpdateAsync(assignment);
+                return true;
+            }
+            catch (Exception)
+            {
+               
+                return false;
+            }
+        }
+
     }
 }

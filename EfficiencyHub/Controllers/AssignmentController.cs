@@ -98,6 +98,64 @@ namespace EfficiencyHub.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid projectId, Guid id)
+        {
+            var assignment = await _assignmentService.GetAssignmentByIdAsync(projectId, id);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new AssignmentEditViewModel
+            {
+                Id = assignment.Id,
+                Title = assignment.Title,
+                Description = assignment.Description,
+                DueDate = assignment.DueDate,
+                Status = assignment.Status,
+                ProjectId = projectId
+            };
+
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(AssignmentEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var success = await _assignmentService.UpdateAssignmentAsync(model);
+
+            if (success)
+            {
+                // Redirect to the Index action, passing the projectId to load tasks for that project
+                return RedirectToAction(nameof(Index), new { projectId = model.ProjectId });
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to update the assignment. Please try again.");
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid projectId, Guid assignmentId)
+        {
+            var success = await _assignmentService.SoftDeleteAssignmentAsync(projectId, assignmentId);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("Index", new { projectId });
+        }
 
     }
 }

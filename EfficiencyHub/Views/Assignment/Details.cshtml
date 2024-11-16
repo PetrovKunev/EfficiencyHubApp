@@ -1,0 +1,30 @@
+﻿@model EfficiencyHub.Web.ViewModels.AssignmentViewModel
+
+@{
+    ViewData["Title"] = "Assignment Details";
+}
+
+<h2>Assignment Details</h2>
+
+<div class="form-group">
+    <label>Title</label>
+    <p class="form-control-static">@Model.Title</p>
+</div>
+
+<div class="form-group">
+    <label>Description</label>
+    <p class="form-control-static">@Model.Description</p>
+</div>
+
+<div class="form-group">
+    <label>Due Date</label>
+    <p class="form-control-static">@Model.DueDate.ToString("dd-MM-yyyy")</p>
+</div>
+
+<div class="form-group">
+    <label>Status</label>
+    <p class="form-control-static">@Model.Status</p>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
