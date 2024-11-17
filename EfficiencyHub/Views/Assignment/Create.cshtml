@@ -5,7 +5,7 @@
     ViewData["Title"] = "Create Assignment";
 }
 
-<h2>Create New Assignment</h2>
+<h2>Create new assignment for @ViewBag.ProjectName</h2>
 
 <form asp-action="Create" method="post">
     <input type="hidden" asp-for="ProjectId" />
@@ -37,6 +37,7 @@
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Create Assignment</button>
+    <a asp-action="Index" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {

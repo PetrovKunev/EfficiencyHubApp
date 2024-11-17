@@ -4,9 +4,7 @@ using EfficiencyHub.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
+
 
 namespace EfficiencyHub.Web.Controllers
 {
@@ -14,11 +12,14 @@ namespace EfficiencyHub.Web.Controllers
     public class AssignmentController : BaseController
     {
         private readonly AssignmentService _assignmentService;
+        private readonly ProjectService _projectService;
 
-        public AssignmentController(AssignmentService assignmentService, ILogger<BaseController> logger, UserManager<ApplicationUser> userManager)
+
+        public AssignmentController(AssignmentService assignmentService, ProjectService projectService, ILogger<BaseController> logger, UserManager<ApplicationUser> userManager)
             : base(logger, userManager)
         {
             _assignmentService = assignmentService;
+            _projectService = projectService;
         }
 
         [HttpGet]
@@ -49,17 +50,35 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
+        //[HttpGet]
+        //public IActionResult Create(Guid projectId)
+        //{
+        //    var viewModel = new AssignmentCreateViewModel
+        //    {
+        //        ProjectId = projectId,
+        //        DueDate = DateTime.Now.AddDays(7)
+        //    };
+        //    ViewBag.ProjectId = projectId;
+        //    return View(viewModel);
+        //}
+
         [HttpGet]
-        public IActionResult Create(Guid projectId)
+        public async Task<IActionResult> Create(Guid projectId)
         {
+            var projectName = await _projectService.GetProjectNameAsync(projectId);
+
             var viewModel = new AssignmentCreateViewModel
             {
                 ProjectId = projectId,
                 DueDate = DateTime.Now.AddDays(7)
             };
+
             ViewBag.ProjectId = projectId;
+            ViewBag.ProjectName = projectName;
+
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -162,11 +181,10 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
-
         [HttpGet]
         public async Task<IActionResult> Details(Guid projectId, Guid id)
         {
-            AssignmentViewModel assignment = await _assignmentService.GetAssignmentDetailsByIdAsync(projectId, id);
+            AssignmentViewModel? assignment = await _assignmentService.GetAssignmentDetailsByIdAsync(projectId, id);
 
             if (assignment == null)
             {

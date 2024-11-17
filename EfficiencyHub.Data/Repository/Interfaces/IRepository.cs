@@ -10,8 +10,8 @@ namespace EfficiencyHub.Data.Repository.Interfaces
         IQueryable<T> GetQueryableWhere(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-
         Task DeleteAsync(Guid id);
         Task DeleteEntityAsync(T entity);
+
     }
 }

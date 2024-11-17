@@ -80,7 +80,7 @@ namespace EfficiencyHub.Services.Data
         }
 
 
-        public async Task<AssignmentEditViewModel> GetAssignmentByIdAsync(Guid projectId, Guid assignmentId)
+        public async Task<AssignmentEditViewModel?> GetAssignmentByIdAsync(Guid projectId, Guid assignmentId)
         {
             var projectAssignments = await _projectAssignmentRepository
                 .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);
@@ -167,7 +167,7 @@ namespace EfficiencyHub.Services.Data
             return true;
         }
 
-        public async Task<AssignmentViewModel> GetAssignmentDetailsByIdAsync(Guid projectId, Guid assignmentId)
+        public async Task<AssignmentViewModel?> GetAssignmentDetailsByIdAsync(Guid projectId, Guid assignmentId)
         {
             var projectAssignments = await _projectAssignmentRepository
                 .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);

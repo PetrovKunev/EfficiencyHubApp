@@ -122,5 +122,10 @@ namespace EfficiencyHub.Services.Data
             return true;
         }
 
+        public async Task<dynamic> GetProjectNameAsync(Guid projectId)
+        {
+            var project = await _projectRepository.GetByIdAsync(projectId);
+            return project?.Name ?? "Unknown Project";
+        }
     }
 }
