@@ -53,5 +53,15 @@ namespace EfficiencyHub.Data.Repository
                 .Where(predicate)
                 .ToListAsync();
         }
+
+        public IQueryable<Assignment> GetQueryableWhere(Expression<Func<Assignment, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteEntityAsync(Assignment entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

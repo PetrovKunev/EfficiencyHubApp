@@ -1,10 +1,8 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace EfficiencyHub.Services.Data
 {
@@ -101,7 +99,7 @@ namespace EfficiencyHub.Services.Data
                 Description = projectAssignment.Assignment.Description,
                 DueDate = projectAssignment.Assignment.DueDate,
                 Status = projectAssignment.Assignment.Status,
-                ProjectId = projectAssignment.ProjectId // Увери се, че задава ProjectId
+                ProjectId = projectAssignment.ProjectId
             };
         }
 
@@ -143,35 +141,53 @@ namespace EfficiencyHub.Services.Data
             }
         }
 
-        public async Task<bool> SoftDeleteAssignmentAsync(Guid projectId, Guid assignmentId)
+        
+        public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId)
         {
-            if (projectId == Guid.Empty || assignmentId == Guid.Empty)
-            {
-                return false;
-            }
-
+            // Намерете връзката в ProjectAssignments
             var projectAssignment = await _projectAssignmentRepository
-                .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);
+                .GetQueryableWhere(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId)
+                .FirstOrDefaultAsync();
 
-            var assignment = projectAssignment.FirstOrDefault()?.Assignment;
-
-            if (assignment == null)
+            if (projectAssignment == null)
             {
                 return false;
             }
 
+            // Маркирайте задачата като изтрита
+            var assignment = projectAssignment.Assignment;
             assignment.IsDeleted = true;
 
-            try
+            // Изтрийте физически връзката в ProjectAssignments
+            await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
+
+            // Обновете задачата
+            await _assignmentRepository.UpdateAsync(assignment);
+
+            return true;
+        }
+
+        public async Task<AssignmentViewModel> GetAssignmentDetailsByIdAsync(Guid projectId, Guid assignmentId)
+        {
+            var projectAssignments = await _projectAssignmentRepository
+                .GetWhereAsync(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId);
+
+            var projectAssignment = projectAssignments.FirstOrDefault();
+
+            if (projectAssignment == null || projectAssignment.Assignment.IsDeleted)
             {
-                await _assignmentRepository.UpdateAsync(assignment);
-                return true;
+                return null;
             }
-            catch (Exception)
+
+            return new AssignmentViewModel
             {
-               
-                return false;
-            }
+                Id = projectAssignment.Assignment.Id,
+                Title = projectAssignment.Assignment.Title,
+                Description = projectAssignment.Assignment.Description,
+                DueDate = projectAssignment.Assignment.DueDate,
+                Status = projectAssignment.Assignment.Status,
+                IsDeleted = projectAssignment.Assignment.IsDeleted
+            };
         }
 
     }

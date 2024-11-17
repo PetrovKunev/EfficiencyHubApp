@@ -50,4 +50,14 @@ public class ActivityLogRepository : IRepository<ActivityLog>
     {
         return await _context.ActivityLogs.Where(predicate).ToListAsync();
     }
+
+    public IQueryable<ActivityLog> GetQueryableWhere(Expression<Func<ActivityLog, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteEntityAsync(ActivityLog entity)
+    {
+        throw new NotImplementedException();
+    }
 }

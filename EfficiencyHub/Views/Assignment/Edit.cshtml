@@ -45,7 +45,8 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <a asp-action="Index" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-secondary">Cancel</a>
+
 </form>
 
 @section Scripts {

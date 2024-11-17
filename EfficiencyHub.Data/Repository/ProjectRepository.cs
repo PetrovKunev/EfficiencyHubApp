@@ -50,4 +50,14 @@ public class ProjectRepository : IRepository<Project>
     {
         return await _context.Projects.Where(predicate).ToListAsync();
     }
+
+    public IQueryable<Project> GetQueryableWhere(Expression<Func<Project, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteEntityAsync(Project entity)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -51,4 +51,14 @@ public class ReminderRepository : IRepository<Reminder>
     {
         return await _context.Reminders.Where(predicate).ToListAsync();
     }
+
+    public IQueryable<Reminder> GetQueryableWhere(Expression<Func<Reminder, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteEntityAsync(Reminder entity)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -38,6 +38,7 @@ namespace EfficiencyHub.Web.Controllers
                 ViewBag.ProjectId = projectId;
                 ViewBag.ProjectName = projectName;
 
+                
                 return View(assignments);
             }
             catch (Exception ex)
@@ -118,6 +119,7 @@ namespace EfficiencyHub.Web.Controllers
                 ProjectId = projectId
             };
 
+            ViewBag.ProjectId = projectId;
             return View(viewModel);
         }
 
@@ -144,17 +146,35 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid projectId, Guid assignmentId)
         {
-            var success = await _assignmentService.SoftDeleteAssignmentAsync(projectId, assignmentId);
-            if (!success)
+            var result = await _assignmentService.DeleteAssignmentAsync(projectId, assignmentId);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to delete the assignment.";
+            }
+
+            return RedirectToAction("Index", new { projectId = projectId });
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid projectId, Guid id)
+        {
+            AssignmentViewModel assignment = await _assignmentService.GetAssignmentDetailsByIdAsync(projectId, id);
+
+            if (assignment == null)
             {
                 return NotFound();
             }
 
-            return RedirectToAction("Index", new { projectId });
+            ViewBag.ProjectId = projectId;
+            return View(assignment);
         }
 
     }
