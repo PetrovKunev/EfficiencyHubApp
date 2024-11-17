@@ -33,8 +33,10 @@
         }
     </tbody>
 </table>
-<a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary">Add New Assignment</a>
-
+<div class="btn-group">
+<a asp-action="Create" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-primary me-2">Add New Assignment</a>
+<a asp-action="Index" asp-controller="Project" class="btn btn-secondary">Projects</a>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
