@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EfficiencyHub.Web.ViewModels
+{
+    public class ReminderCreateViewModel
+    {
+        public string Message { get; set; } = string.Empty;
+        public DateTime ReminderDate { get; set; } = DateTime.Now;
+        public Guid AssignmentId { get; set; }
+        public string AssignmentTitle { get; set; } = string.Empty;
+    }
+}

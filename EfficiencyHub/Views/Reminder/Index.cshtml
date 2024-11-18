@@ -1,0 +1,30 @@
+﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.ReminderViewModel>
+
+<h2>Reminders</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Message</th>
+            <th>Reminder Date</th>
+            <th>Assignment</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reminder in Model)
+        {
+            <tr>
+                <td>@reminder.Message</td>
+                <td>@reminder.ReminderDate.ToString("g")</td>
+                <td>@reminder.AssignmentTitle</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@reminder.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@reminder.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this reminder?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

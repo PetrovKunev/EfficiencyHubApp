@@ -24,4 +24,3 @@ namespace EfficiencyHub.Data.Models
         public ApplicationUser User { get; set; } = null!;
     }
 }
-    
