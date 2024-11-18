@@ -190,5 +190,31 @@ namespace EfficiencyHub.Services.Data
             };
         }
 
+        public async Task<string> GetAssignmentNameAsync(Guid assignmentId)
+        {
+            var assignment = await _assignmentRepository.GetByIdAsync(assignmentId);
+            if (assignment == null)
+            {
+                throw new KeyNotFoundException("Assignment not found.");
+            }
+
+            return assignment.Title;
+        }
+
+        public async Task<Guid> GetProjectIdByAssignmentAsync(Guid assignmentId)
+        {
+            var projectAssignments = await _projectAssignmentRepository
+                .GetWhereAsync(pa => pa.AssignmentId == assignmentId);
+
+            var projectAssignment = projectAssignments.FirstOrDefault();
+
+            if (projectAssignment == null)
+            {
+                throw new InvalidOperationException("Project not found for the given assignment.");
+            }
+
+            return projectAssignment.ProjectId;
+        }
+
     }
 }

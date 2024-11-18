@@ -11,44 +11,57 @@ namespace EfficiencyHub.Web.Controllers
     public class ReminderController : BaseController
     {
         private readonly ReminderService _reminderService;
+        private readonly AssignmentService _assignmentService;
 
-        public ReminderController(ReminderService reminderService, ILogger<BaseController> logger, UserManager<ApplicationUser> userManager)
+        public ReminderController(ReminderService reminderService,AssignmentService assignmentService , ILogger<BaseController> logger, UserManager<ApplicationUser> userManager)
             : base(logger, userManager)
         {
             _reminderService = reminderService;
+            _assignmentService = assignmentService;
+        
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid assignmentId)
         {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
             try
             {
-                var user = await GetCurrentUserAsync();
-                if (user == null)
-                {
-                    return Unauthorized();
-                }
+                var reminders = await _reminderService.GetRemindersByAssignmentAsync(assignmentId, currentUser.Id);
+                var assignmentName = await _assignmentService.GetAssignmentNameAsync(assignmentId);
+                var projectId = await _assignmentService.GetProjectIdByAssignmentAsync(assignmentId);
 
-                var reminders = await _reminderService.GetRemindersForUserAsync(user.Id);
+                ViewBag.AssignmentId = assignmentId;
+                ViewBag.AssignmentName = assignmentName;
+                ViewBag.ProjectId = projectId;
+
                 return View(reminders);
             }
             catch (Exception ex)
             {
-                LogError("Failed to load reminders.", ex);
+                LogError("Error loading reminders.", ex);
                 return RedirectToAction("Error", "Home");
             }
         }
 
+
         [HttpGet]
         public IActionResult Create(Guid assignmentId)
         {
-            var model = new ReminderCreateViewModel
+            var viewModel = new ReminderCreateViewModel
             {
-                AssignmentId = assignmentId
+                AssignmentId = assignmentId,
+                ReminderDate = DateTime.Now.AddDays(1)
             };
-
-            return View(model);
+            ViewBag.AssignmentId = assignmentId;
+            return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

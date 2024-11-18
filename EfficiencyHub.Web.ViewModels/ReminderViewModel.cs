@@ -13,5 +13,6 @@ namespace EfficiencyHub.Web.ViewModels
         public DateTime ReminderDate { get; set; }
         public Guid AssignmentId { get; set; }
         public string AssignmentTitle { get; set; } = string.Empty;
+        public string AssignmentName { get; set; } = string.Empty;  
     }
 }

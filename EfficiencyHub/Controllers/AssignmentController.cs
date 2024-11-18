@@ -50,18 +50,6 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
-        //[HttpGet]
-        //public IActionResult Create(Guid projectId)
-        //{
-        //    var viewModel = new AssignmentCreateViewModel
-        //    {
-        //        ProjectId = projectId,
-        //        DueDate = DateTime.Now.AddDays(7)
-        //    };
-        //    ViewBag.ProjectId = projectId;
-        //    return View(viewModel);
-        //}
-
         [HttpGet]
         public async Task<IActionResult> Create(Guid projectId)
         {

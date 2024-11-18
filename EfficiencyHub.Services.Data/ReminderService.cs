@@ -69,6 +69,19 @@ namespace EfficiencyHub.Services.Data
             }
         }
 
+        public async Task<IEnumerable<ReminderViewModel>> GetRemindersByAssignmentAsync(Guid assignmentId, Guid userId)
+        {
+            var reminders = await _reminderRepository.GetWhereAsync(r => r.AssignmentId == assignmentId && r.UserId == userId);
+
+            return reminders.Select(r => new ReminderViewModel
+            {
+                Id = r.Id,
+                Message = r.Message,
+                ReminderDate = r.ReminderDate,
+                AssignmentName = r.Assignment.Title
+            }).ToList();
+        }
+
         public async Task DeleteReminderAsync(Guid id)
         {
             await _reminderRepository.DeleteAsync(id);

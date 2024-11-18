@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.ReminderViewModel>
+@{
+    ViewData["Title"] = "Reminders";
+}
 
-<h2>Reminders</h2>
+<h2>Reminders for: @ViewBag.AssignmentName</h2>
 
 <table class="table">
     <thead>
@@ -16,8 +19,8 @@
         {
             <tr>
                 <td>@reminder.Message</td>
-                <td>@reminder.ReminderDate.ToString("g")</td>
-                <td>@reminder.AssignmentTitle</td>
+                <td>@reminder.ReminderDate.ToShortDateString()</td>
+                <td>@reminder.AssignmentName</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@reminder.Id" class="btn btn-warning btn-sm">Edit</a>
                     <form asp-action="Delete" asp-route-id="@reminder.Id" method="post" class="d-inline">
@@ -28,3 +31,8 @@
         }
     </tbody>
 </table>
+
+<div class="btn-group mt-3">
+    <a asp-action="Create" asp-route-assignmentId="@ViewBag.AssignmentId" class="btn btn-primary me-2">Create New Reminder</a>
+    <a asp-action="Index" asp-controller="Assignment" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-secondary">Back to Assignments</a>
+</div>
