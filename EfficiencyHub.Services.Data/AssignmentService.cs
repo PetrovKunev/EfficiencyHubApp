@@ -154,14 +154,11 @@ namespace EfficiencyHub.Services.Data
                 return false;
             }
 
-            // Маркирайте задачата като изтрита
             var assignment = projectAssignment.Assignment;
             assignment.IsDeleted = true;
 
-            // Изтрийте физически връзката в ProjectAssignments
             await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
 
-            // Обновете задачата
             await _assignmentRepository.UpdateAsync(assignment);
 
             return true;

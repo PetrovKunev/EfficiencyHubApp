@@ -49,46 +49,65 @@ namespace EfficiencyHub.Web.Controllers
             }
         }
 
-
         [HttpGet]
-        public IActionResult Create(Guid assignmentId)
+        public async Task<IActionResult> Create(Guid assignmentId)
         {
-            var viewModel = new ReminderCreateViewModel
+            // Вземаме текущия потребител
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            // Проверяваме дали можем да вземем име на задачата
+            var assignmentName = await _assignmentService.GetAssignmentNameAsync(assignmentId);
+            if (string.IsNullOrEmpty(assignmentName))
+            {
+                return NotFound("Assignment not found.");
+            }
+
+            // Подготвяме модела
+            ViewBag.AssignmentId = assignmentId;
+            ViewBag.AssignmentName = assignmentName;
+
+            var model = new ReminderCreateViewModel
             {
                 AssignmentId = assignmentId,
                 ReminderDate = DateTime.Now.AddDays(1)
             };
-            ViewBag.AssignmentId = assignmentId;
-            return View(viewModel);
-        }
 
+            return View(model);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReminderCreateViewModel model)
         {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                var user = await GetCurrentUserAsync();
-                if (user == null)
-                {
-                    return Unauthorized();
-                }
-
-                await _reminderService.AddReminderAsync(model, user.Id);
-                return RedirectToAction("Index");
+                
+                await _reminderService.CreateReminderAsync(model, currentUser.Id);
+                return RedirectToAction("Index", new { assignmentId = model.AssignmentId });
             }
             catch (Exception ex)
             {
-                LogError("Failed to create reminder.", ex);
-                return View(model);
+                LogError("Error creating reminder.", ex);
+                return RedirectToAction("Error", "Home");
             }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)

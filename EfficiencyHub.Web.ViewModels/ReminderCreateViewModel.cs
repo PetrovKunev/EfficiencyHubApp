@@ -1,16 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static EfficiencyHub.Common.EntityValidationConstants;   
+using System.ComponentModel.DataAnnotations;
+
 
 namespace EfficiencyHub.Web.ViewModels
 {
     public class ReminderCreateViewModel
     {
+        [Required]
+        [MinLength(MessageMinLength)]
+        [MaxLength(MessageMaxLength)]
         public string Message { get; set; } = string.Empty;
+
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime ReminderDate { get; set; } = DateTime.Now;
+        
+        [Required]
         public Guid AssignmentId { get; set; }
-        public string AssignmentTitle { get; set; } = string.Empty;
+        
     }
 }

@@ -8,5 +8,8 @@ namespace EfficiencyHub.Common
 
         public const int NameMinLength = 5;
         public const int NameMaxLength = 50;
+
+        public const int MessageMinLength = 5;
+        public const int MessageMaxLength = 50;
     }
 }

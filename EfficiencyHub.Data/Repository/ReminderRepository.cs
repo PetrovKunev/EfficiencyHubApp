@@ -27,6 +27,11 @@ public class ReminderRepository : IRepository<Reminder>
 
     public async Task AddAsync(Reminder entity)
     {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
         await _context.Reminders.AddAsync(entity);
         await _context.SaveChangesAsync();
     }

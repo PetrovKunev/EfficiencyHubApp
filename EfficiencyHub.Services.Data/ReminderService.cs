@@ -78,14 +78,35 @@ namespace EfficiencyHub.Services.Data
                 Id = r.Id,
                 Message = r.Message,
                 ReminderDate = r.ReminderDate,
-                AssignmentName = r.Assignment.Title
+                AssignmentName = r.Assignment?.Title ?? "Unknown Assignment" 
             }).ToList();
         }
+
 
         public async Task DeleteReminderAsync(Guid id)
         {
             await _reminderRepository.DeleteAsync(id);
         }
+
+        public async Task CreateReminderAsync(ReminderCreateViewModel model, Guid userId)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            var reminder = new Reminder
+            {
+                Id = Guid.NewGuid(),
+                Message = model.Message,
+                ReminderDate = model.ReminderDate,
+                AssignmentId = model.AssignmentId,
+                UserId = userId
+            };
+
+            await _reminderRepository.AddAsync(reminder);
+        }
+
     }
 
 }
