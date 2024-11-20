@@ -63,10 +63,16 @@ namespace EfficiencyHub.Data.Repository
             return _context.Reminders.Where(predicate);
         }
 
-
-        public Task DeleteEntityAsync(Reminder entity)
+        public async Task DeleteEntityAsync(Reminder entity)
         {
-            throw new NotImplementedException();
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity), "Entity cannot be null.");
+            }
+
+            _context.Reminders.Remove(entity);
+            await _context.SaveChangesAsync();
         }
+
     }
 }

@@ -2,6 +2,7 @@
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 
 namespace EfficiencyHub.Services.Data
@@ -11,16 +12,20 @@ namespace EfficiencyHub.Services.Data
         private readonly IRepository<Assignment> _assignmentRepository;
         private readonly IRepository<ProjectAssignment> _projectAssignmentRepository;
         private readonly IRepository<Project> _projectRepository;
+        private readonly ILogger<AssignmentService> _logger;
 
         public AssignmentService(
             IRepository<Assignment> assignmentRepository,
             IRepository<ProjectAssignment> projectAssignmentRepository,
-            IRepository<Project> projectRepository)
+            IRepository<Project> projectRepository,
+            ILogger<AssignmentService> logger)
         {
             _assignmentRepository = assignmentRepository;
             _projectAssignmentRepository = projectAssignmentRepository;
             _projectRepository = projectRepository;
+            _logger = logger;
         }
+
 
         public async Task<IEnumerable<AssignmentViewModel>> GetAssignmentsForProjectAsync(Guid projectId)
         {
@@ -203,15 +208,24 @@ namespace EfficiencyHub.Services.Data
             var projectAssignments = await _projectAssignmentRepository
                 .GetWhereAsync(pa => pa.AssignmentId == assignmentId);
 
+            if (!projectAssignments.Any())
+            {
+                _logger.LogError($"No project assignment found for AssignmentId: {assignmentId}");
+                throw new InvalidOperationException("Project not found for the given assignment.");
+            }
+
             var projectAssignment = projectAssignments.FirstOrDefault();
 
             if (projectAssignment == null)
             {
-                throw new InvalidOperationException("Project not found for the given assignment.");
+                _logger.LogError($"No valid project assignment found for AssignmentId: {assignmentId}");
+                throw new InvalidOperationException("No project found for the specified assignment.");
             }
 
+            _logger.LogInformation($"Found ProjectId: {projectAssignment.ProjectId} for AssignmentId: {assignmentId}");
             return projectAssignment.ProjectId;
         }
+
 
     }
 }

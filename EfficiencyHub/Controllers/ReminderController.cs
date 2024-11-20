@@ -121,16 +121,40 @@ namespace EfficiencyHub.Web.Controllers
             {
                 // Зареждане на напомнянието
                 var reminder = await _reminderService.GetReminderByIdAsync(id, currentUser.Id);
+                if (reminder == null)
+                {
+                    _logger.LogError($"Reminder with Id {id} not found.");
+                    return NotFound("Reminder not found.");
+                }
+
+                if (reminder.AssignmentId == Guid.Empty)
+                {
+                    _logger.LogError($"Reminder with Id {id} has an invalid AssignmentId.");
+                    return NotFound("Reminder is not associated with a valid assignment.");
+                }
 
                 // Зареждане на ProjectId чрез AssignmentId
                 var projectId = await _assignmentService.GetProjectIdByAssignmentAsync(reminder.AssignmentId);
                 ViewBag.ProjectId = projectId;
 
-                return View(reminder);
+                // Зареждане на името на задачата
+                var assignmentName = await _assignmentService.GetAssignmentNameAsync(reminder.AssignmentId);
+                ViewBag.AssignmentName = assignmentName;
+
+                // Преобразуване на модела към ReminderEditViewModel
+                var editModel = new ReminderEditViewModel
+                {
+                    Id = reminder.Id,
+                    AssignmentId = reminder.AssignmentId,
+                    Message = reminder.Message,
+                    ReminderDate = reminder.ReminderDate
+                };
+
+                return View(editModel); // Изпращаме ReminderEditViewModel към изгледа
             }
             catch (InvalidOperationException ex)
             {
-                LogError("Error loading project for assignment.", ex);
+                LogError("Error loading project or assignment.", ex);
                 return RedirectToAction("Error", "Home");
             }
         }
@@ -163,7 +187,6 @@ namespace EfficiencyHub.Web.Controllers
             }
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
@@ -176,15 +199,24 @@ namespace EfficiencyHub.Web.Controllers
 
             try
             {
-                await _reminderService.DeleteReminderAsync(id, currentUser.Id);
-                return RedirectToAction("Index", new { assignmentId = ViewBag.AssignmentId });
+                var assignmentId = await _reminderService.DeleteReminderAsync(id, currentUser.Id);
+                if (assignmentId == null)
+                {
+                    TempData["ErrorMessage"] = "Reminder not found or you are not authorized to delete it.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["SuccessMessage"] = "Reminder successfully deleted.";
+                return RedirectToAction("Index", new { assignmentId });
             }
             catch (Exception ex)
             {
                 LogError("Error deleting reminder.", ex);
-                return RedirectToAction("Error", "Home");
+                TempData["ErrorMessage"] = "An error occurred while deleting the reminder.";
+                return RedirectToAction("Index");
             }
         }
+
 
     }
 

@@ -2,16 +2,18 @@
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EfficiencyHub.Services.Data
 {
     public class ReminderService
     {
         private readonly IRepository<Reminder> _reminderRepository;
-
-        public ReminderService(IRepository<Reminder> reminderRepository)
+        private readonly ILogger<ReminderService> _logger;
+        public ReminderService(IRepository<Reminder> reminderRepository, ILogger<ReminderService> logger)
         {
             _reminderRepository = reminderRepository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<ReminderViewModel>> GetRemindersForUserAsync(Guid userId)
@@ -91,17 +93,18 @@ namespace EfficiencyHub.Services.Data
 
         public async Task CreateReminderAsync(ReminderCreateViewModel model, Guid userId)
         {
-            if (model == null)
+            if (model.AssignmentId == Guid.Empty)
             {
-                throw new ArgumentNullException(nameof(model));
+                _logger.LogError("Invalid AssignmentId provided for Reminder creation.");
+                throw new ArgumentException("AssignmentId cannot be empty.");
             }
 
             var reminder = new Reminder
             {
                 Id = Guid.NewGuid(),
+                AssignmentId = model.AssignmentId,
                 Message = model.Message,
                 ReminderDate = model.ReminderDate,
-                AssignmentId = model.AssignmentId,
                 UserId = userId
             };
 
@@ -110,21 +113,22 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<ReminderViewModel?> GetReminderByIdAsync(Guid id, Guid userId)
         {
-            var reminder = await _reminderRepository.GetQueryableWhere(r => r.Id == id && r.UserId == userId)
-                .Include(r => r.Assignment)
+            var reminder = await _reminderRepository
+                .GetQueryableWhere(r => r.Id == id && r.UserId == userId)
                 .FirstOrDefaultAsync();
 
             if (reminder == null)
             {
+                _logger.LogError($"Reminder with Id {id} not found for UserId {userId}.");
                 return null;
             }
 
             return new ReminderViewModel
             {
                 Id = reminder.Id,
+                AssignmentId = reminder.AssignmentId,
                 Message = reminder.Message,
-                ReminderDate = reminder.ReminderDate,
-                AssignmentName = reminder.Assignment != null ? reminder.Assignment.Title : "No Assignment"
+                ReminderDate = reminder.ReminderDate
             };
         }
 
@@ -143,15 +147,17 @@ namespace EfficiencyHub.Services.Data
             await _reminderRepository.UpdateAsync(reminder);
         }
 
-        public async Task DeleteReminderAsync(Guid id, Guid userId)
+        public async Task<Guid?> DeleteReminderAsync(Guid id, Guid userId)
         {
             var reminder = await _reminderRepository.GetByIdAsync(id);
             if (reminder == null || reminder.UserId != userId)
             {
-                throw new UnauthorizedAccessException("You cannot delete this reminder.");
+                return null;
             }
 
+            var assignmentId = reminder.AssignmentId;
             await _reminderRepository.DeleteEntityAsync(reminder);
+            return assignmentId;
         }
 
     }
