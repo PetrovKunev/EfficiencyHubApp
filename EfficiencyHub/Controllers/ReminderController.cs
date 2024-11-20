@@ -52,21 +52,21 @@ namespace EfficiencyHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(Guid assignmentId)
         {
-            // Вземаме текущия потребител
+
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
             {
                 return Unauthorized();
             }
 
-            // Проверяваме дали можем да вземем име на задачата
+
             var assignmentName = await _assignmentService.GetAssignmentNameAsync(assignmentId);
             if (string.IsNullOrEmpty(assignmentName))
             {
                 return NotFound("Assignment not found.");
             }
 
-            // Подготвяме модела
+
             ViewBag.AssignmentId = assignmentId;
             ViewBag.AssignmentName = assignmentName;
 
@@ -78,6 +78,7 @@ namespace EfficiencyHub.Web.Controllers
 
             return View(model);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -107,64 +108,84 @@ namespace EfficiencyHub.Web.Controllers
             }
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
             try
             {
-                var reminder = await _reminderService.GetReminderByIdAsync(id);
-                if (reminder == null)
-                {
-                    return NotFound();
-                }
+                // Зареждане на напомнянието
+                var reminder = await _reminderService.GetReminderByIdAsync(id, currentUser.Id);
+
+                // Зареждане на ProjectId чрез AssignmentId
+                var projectId = await _assignmentService.GetProjectIdByAssignmentAsync(reminder.AssignmentId);
+                ViewBag.ProjectId = projectId;
 
                 return View(reminder);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                LogError("Failed to load reminder for editing.", ex);
-                return RedirectToAction("Index");
+                LogError("Error loading project for assignment.", ex);
+                return RedirectToAction("Error", "Home");
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ReminderEditViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                await _reminderService.UpdateReminderAsync(model);
-                return RedirectToAction("Index");
+                await _reminderService.UpdateReminderAsync(model, currentUser.Id);
+                return RedirectToAction("Index", new { assignmentId = model.AssignmentId });
             }
             catch (Exception ex)
             {
-                LogError("Failed to update reminder.", ex);
-                return View(model);
+                LogError("Error updating reminder.", ex);
+                return RedirectToAction("Error", "Home");
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
             try
             {
-                await _reminderService.DeleteReminderAsync(id);
-                return RedirectToAction("Index");
+                await _reminderService.DeleteReminderAsync(id, currentUser.Id);
+                return RedirectToAction("Index", new { assignmentId = ViewBag.AssignmentId });
             }
             catch (Exception ex)
             {
-                LogError("Failed to delete reminder.", ex);
-                return RedirectToAction("Index");
+                LogError("Error deleting reminder.", ex);
+                return RedirectToAction("Error", "Home");
             }
         }
+
     }
 
 }

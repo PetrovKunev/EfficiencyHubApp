@@ -1,6 +1,7 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace EfficiencyHub.Services.Data
 {
@@ -105,6 +106,52 @@ namespace EfficiencyHub.Services.Data
             };
 
             await _reminderRepository.AddAsync(reminder);
+        }
+
+        public async Task<ReminderViewModel?> GetReminderByIdAsync(Guid id, Guid userId)
+        {
+            var reminder = await _reminderRepository.GetQueryableWhere(r => r.Id == id && r.UserId == userId)
+                .Include(r => r.Assignment)
+                .FirstOrDefaultAsync();
+
+            if (reminder == null)
+            {
+                return null;
+            }
+
+            return new ReminderViewModel
+            {
+                Id = reminder.Id,
+                Message = reminder.Message,
+                ReminderDate = reminder.ReminderDate,
+                AssignmentName = reminder.Assignment != null ? reminder.Assignment.Title : "No Assignment"
+            };
+        }
+
+
+        public async Task UpdateReminderAsync(ReminderEditViewModel model, Guid userId)
+        {
+            var reminder = await _reminderRepository.GetByIdAsync(model.Id);
+            if (reminder == null || reminder.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You cannot edit this reminder.");
+            }
+
+            reminder.Message = model.Message;
+            reminder.ReminderDate = model.ReminderDate;
+
+            await _reminderRepository.UpdateAsync(reminder);
+        }
+
+        public async Task DeleteReminderAsync(Guid id, Guid userId)
+        {
+            var reminder = await _reminderRepository.GetByIdAsync(id);
+            if (reminder == null || reminder.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You cannot delete this reminder.");
+            }
+
+            await _reminderRepository.DeleteEntityAsync(reminder);
         }
 
     }
