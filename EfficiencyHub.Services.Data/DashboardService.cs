@@ -27,12 +27,13 @@ public class DashboardService
         var reminders = await _reminderRepository.GetAllAsync();
 
         var activeProjects = projects.Where(p => !p.IsDeleted);
+        var activeTasks = tasks.Where(t => !t.IsDeleted);
 
         return new DashboardViewModel
         {
             ProjectCount = activeProjects.Count(),
-            TaskCount = tasks.Count(),
-            CompletedTaskCount = tasks.Count(t => t.Status == AssignmentStatus.Completed),
+            TaskCount = activeTasks.Count(),
+            CompletedTaskCount = activeTasks.Count(t => t.Status == AssignmentStatus.Completed),
             RecentActivityLogs = activityLogs.OrderByDescending(a => a.Timestamp).Take(5),
             UpcomingReminders = reminders.Where(r => r.ReminderDate > DateTime.Now).OrderBy(r => r.ReminderDate).Take(5)
         };

@@ -1,0 +1,26 @@
+﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.ActivityLogViewModel>
+@{
+    ViewData["Title"] = "Logs";
+}
+
+<h2>Activity Logs</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Action Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.Timestamp</td>
+                <td>@log.ActionType</td>
+                <td>@log.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>

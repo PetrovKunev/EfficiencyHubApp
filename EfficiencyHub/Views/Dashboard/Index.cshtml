@@ -1,7 +1,9 @@
-﻿@model DashboardViewModel
+﻿@* @model DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
 }
+<p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy  HH:mm")</p>
+<br />
 <h1><u>Dashboard</u></h1>
 
 <div class="mb-4">
@@ -11,13 +13,13 @@
 </div>
 
 <div>
-    <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy  HH:mm")</p>
+    
     <br />
     <p>Projects: @Model.ProjectCount</p>
     <p>Tasks: @Model.TaskCount</p>
     <p>Completed Tasks: @Model.CompletedTaskCount</p>
 </div>
-
+<br />
 <h3>Recent Activities:</h3>
 <ul>
     @foreach (var log in Model.RecentActivityLogs)
@@ -26,10 +28,78 @@
     }
 </ul>
 
+<div>
+    <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-secondary">
+        View Logs
+    </a>
+</div>
+<br />
 <h3>Upcoming Reminders:</h3>
 <ul>
     @foreach (var reminder in Model.UpcomingReminders)
     {
         <li>@reminder.Message - @reminder.ReminderDate</li>
     }
-</ul>
+</ul> *@
+
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Текущо време -->
+<p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p>
+
+<!-- Оранжев блок -->
+<h1 class="text-center"><u>Dashboard</u></h1>
+<div class="mb-4 text-center">
+    <a asp-controller="Project" asp-action="Index" class="btn btn-primary">
+        View My Projects
+    </a>
+</div>
+
+<div class="row mt-4">
+    <!-- Син блок (Projects, Tasks, Completed Tasks) -->
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <p>Projects: <b>@Model.ProjectCount</b></p>
+                <p>Tasks: <b>@Model.TaskCount</b></p>
+                <p>Completed Tasks: <b>@Model.CompletedTaskCount</b></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Зелен блок (Recent Activities) -->
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h3>Recent Activities:</h3>
+                <ul>
+                    @foreach (var log in Model.RecentActivityLogs)
+                    {
+                        <li>@log.Description - @log.Timestamp</li>
+                    }
+                </ul>
+                <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-secondary mt-2">
+                    View Logs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Червен блок (Upcoming Reminders) -->
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h3>Upcoming Reminders:</h3>
+                <ul>
+                    @foreach (var reminder in Model.UpcomingReminders)
+                    {
+                        <li>@reminder.Message - @reminder.ReminderDate.ToString("dd-MM-yyyy HH:mm")</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
