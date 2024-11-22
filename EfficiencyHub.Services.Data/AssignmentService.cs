@@ -1,4 +1,5 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +14,20 @@ namespace EfficiencyHub.Services.Data
         private readonly IRepository<ProjectAssignment> _projectAssignmentRepository;
         private readonly IRepository<Project> _projectRepository;
         private readonly ILogger<AssignmentService> _logger;
+        private readonly ActivityLogService _activityLogService;
 
         public AssignmentService(
             IRepository<Assignment> assignmentRepository,
             IRepository<ProjectAssignment> projectAssignmentRepository,
             IRepository<Project> projectRepository,
-            ILogger<AssignmentService> logger)
+            ILogger<AssignmentService> logger,
+            ActivityLogService activityLogService)
         {
             _assignmentRepository = assignmentRepository;
             _projectAssignmentRepository = projectAssignmentRepository;
             _projectRepository = projectRepository;
             _logger = logger;
+            _activityLogService = activityLogService;
         }
 
 
@@ -76,6 +80,7 @@ namespace EfficiencyHub.Services.Data
                 };
 
                 await _projectAssignmentRepository.AddAsync(projectAssignment);
+                await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created assignment '{assignment.Title}'.");
                 return true;
             }
             catch (Exception)
@@ -146,7 +151,7 @@ namespace EfficiencyHub.Services.Data
             }
         }
 
-        
+
         public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId)
         {
             // Намерете връзката в ProjectAssignments

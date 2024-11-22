@@ -1,4 +1,5 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -35,4 +36,27 @@ public class ActivityLogService
             throw;
         }
     }
+
+    public async Task LogActionAsync(Guid userId, ActionType actionType, string description)
+    {
+        try
+        {
+            var log = new ActivityLog
+            {
+                UserId = userId,
+                ActionType = actionType,
+                Description = description,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await _activityLogRepository.AddAsync(log);
+            _logger.LogInformation("Successfully logged action: {ActionType} by User: {UserId}", actionType, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error logging action: {ActionType} for User: {UserId}", actionType, userId);
+            throw;
+        }
+    }
+
 }
