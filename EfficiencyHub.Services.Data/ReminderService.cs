@@ -1,4 +1,5 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace EfficiencyHub.Services.Data
     {
         private readonly IRepository<Reminder> _reminderRepository;
         private readonly ILogger<ReminderService> _logger;
-        public ReminderService(IRepository<Reminder> reminderRepository, ILogger<ReminderService> logger)
+        private readonly ActivityLogService _activityLogService;
+        public ReminderService(IRepository<Reminder> reminderRepository, ILogger<ReminderService> logger, ActivityLogService activityLogService)
         {
             _reminderRepository = reminderRepository;
             _logger = logger;
+            _activityLogService = activityLogService;
         }
 
         public async Task<IEnumerable<ReminderViewModel>> GetRemindersForUserAsync(Guid userId)
@@ -109,6 +112,8 @@ namespace EfficiencyHub.Services.Data
             };
 
             await _reminderRepository.AddAsync(reminder);
+            await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created reminder with message '{reminder.Message}'", reminder.Id, "Reminder");
+
         }
 
         public async Task<ReminderViewModel?> GetReminderByIdAsync(Guid id, Guid userId)
@@ -145,6 +150,9 @@ namespace EfficiencyHub.Services.Data
             reminder.ReminderDate = model.ReminderDate;
 
             await _reminderRepository.UpdateAsync(reminder);
+
+            await _activityLogService.LogActionAsync(userId, ActionType.Updated, $"Updated reminder with message '{reminder.Message}'", reminder.Id, "Reminder");
+
         }
 
         public async Task<Guid?> DeleteReminderAsync(Guid id, Guid userId)
@@ -157,6 +165,10 @@ namespace EfficiencyHub.Services.Data
 
             var assignmentId = reminder.AssignmentId;
             await _reminderRepository.DeleteEntityAsync(reminder);
+
+            await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted reminder with message '{reminder.Message}'", reminder.Id, "Reminder");
+
+
             return assignmentId;
         }
 

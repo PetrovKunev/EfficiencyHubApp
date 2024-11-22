@@ -80,7 +80,8 @@ namespace EfficiencyHub.Services.Data
                 };
 
                 await _projectAssignmentRepository.AddAsync(projectAssignment);
-                await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created assignment '{assignment.Title}'.");
+                await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created assignment '{assignment.Title}'", assignment.Id, "Assignment");
+
                 return true;
             }
             catch (Exception)
@@ -88,7 +89,6 @@ namespace EfficiencyHub.Services.Data
                 return false;
             }
         }
-
 
         public async Task<AssignmentEditViewModel?> GetAssignmentByIdAsync(Guid projectId, Guid assignmentId)
         {
@@ -113,8 +113,7 @@ namespace EfficiencyHub.Services.Data
             };
         }
 
-
-        public async Task<bool> UpdateAssignmentAsync(AssignmentEditViewModel model)
+        public async Task<bool> UpdateAssignmentAsync(AssignmentEditViewModel model, Guid userId)
         {
             if (model == null || model.Id == Guid.Empty)
             {
@@ -143,18 +142,48 @@ namespace EfficiencyHub.Services.Data
             try
             {
                 await _assignmentRepository.UpdateAsync(assignment);
+
+                await _activityLogService.LogActionAsync(userId, ActionType.Updated, $"Updated assignment '{assignment.Title}'", assignment.Id, "Assignment");
+
+
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating assignment {AssignmentId}", model.Id);
                 return false;
             }
         }
 
 
-        public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId)
+
+        //public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId)
+        //{
+
+        //    var projectAssignment = await _projectAssignmentRepository
+        //        .GetQueryableWhere(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId)
+        //        .FirstOrDefaultAsync();
+
+        //    if (projectAssignment == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    var assignment = projectAssignment.Assignment;
+        //    assignment.IsDeleted = true;
+
+        //    await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
+
+        //    await _assignmentRepository.UpdateAsync(assignment);
+
+        //    await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted assignment '{assignment.Title}'", assignment.Id, "Assignment");
+
+
+        //    return true;
+        //}
+
+        public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId, Guid userId)
         {
-            // Намерете връзката в ProjectAssignments
             var projectAssignment = await _projectAssignmentRepository
                 .GetQueryableWhere(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId)
                 .FirstOrDefaultAsync();
@@ -168,11 +197,13 @@ namespace EfficiencyHub.Services.Data
             assignment.IsDeleted = true;
 
             await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
-
             await _assignmentRepository.UpdateAsync(assignment);
+
+            await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted assignment '{assignment.Title}'", assignment.Id, "Assignment");
 
             return true;
         }
+
 
         public async Task<AssignmentViewModel?> GetAssignmentDetailsByIdAsync(Guid projectId, Guid assignmentId)
         {
@@ -230,7 +261,6 @@ namespace EfficiencyHub.Services.Data
             _logger.LogInformation($"Found ProjectId: {projectAssignment.ProjectId} for AssignmentId: {assignmentId}");
             return projectAssignment.ProjectId;
         }
-
 
     }
 }

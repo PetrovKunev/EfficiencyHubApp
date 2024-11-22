@@ -1,4 +1,5 @@
-﻿using EfficiencyHub.Data.Models;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 
@@ -7,10 +8,12 @@ namespace EfficiencyHub.Services.Data
     public class ProjectService
     {
         private readonly IRepository<Project> _projectRepository;
+        private readonly ActivityLogService _activityLogService;
 
-        public ProjectService(IRepository<Project> projectRepository)
+        public ProjectService(IRepository<Project> projectRepository, ActivityLogService activityLogService)
         {
             _projectRepository = projectRepository;
+            _activityLogService = activityLogService;
         }
 
         public async Task<bool> CreateProjectAsync(ProjectCreateViewModel model, Guid userId)
@@ -32,6 +35,10 @@ namespace EfficiencyHub.Services.Data
             };
 
             await _projectRepository.AddAsync(project);
+
+            // Log the action
+            await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created project '{project.Name}'", project.Id, "Project");
+
             return true;
         }
 
@@ -106,6 +113,8 @@ namespace EfficiencyHub.Services.Data
             project.Role = model.Role;
 
             await _projectRepository.UpdateAsync(project);
+            await _activityLogService.LogActionAsync(userId, ActionType.Updated, $"Updated project '{project.Name}'", project.Id, "Project");
+
             return true;
         }
 
@@ -119,6 +128,8 @@ namespace EfficiencyHub.Services.Data
 
             project.IsDeleted = true;
             await _projectRepository.UpdateAsync(project);
+            await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted project '{project.Name}'", project.Id, "Project");
+
             return true;
         }
 

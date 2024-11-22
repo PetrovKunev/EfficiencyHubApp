@@ -131,41 +131,91 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(AssignmentEditViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+
+        //    var success = await _assignmentService.UpdateAssignmentAsync(model);
+
+        //    if (success)
+        //    {
+        //        // Redirect to the Index action, passing the projectId to load tasks for that project
+        //        return RedirectToAction(nameof(Index), new { projectId = model.ProjectId });
+        //    }
+
+        //    ModelState.AddModelError(string.Empty, "Failed to update the assignment. Please try again.");
+        //    return View(model);
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AssignmentEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("ModelState is invalid for Edit Assignment: {Model}", model);
                 return View(model);
             }
 
-            var success = await _assignmentService.UpdateAssignmentAsync(model);
+            // Вземаме текущия потребител
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                _logger.LogError("User is not authenticated.");
+                return Unauthorized();
+            }
+
+            var success = await _assignmentService.UpdateAssignmentAsync(model, user.Id);
 
             if (success)
             {
-                // Redirect to the Index action, passing the projectId to load tasks for that project
+                _logger.LogInformation("Assignment updated successfully. Redirecting to Index for ProjectId: {ProjectId}", model.ProjectId);
                 return RedirectToAction(nameof(Index), new { projectId = model.ProjectId });
             }
 
+            _logger.LogError("Failed to update the assignment for ProjectId: {ProjectId}", model.ProjectId);
             ModelState.AddModelError(string.Empty, "Failed to update the assignment. Please try again.");
             return View(model);
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Delete(Guid projectId, Guid assignmentId)
+        //{
+        //    var result = await _assignmentService.DeleteAssignmentAsync(projectId, assignmentId);
 
-       
+        //    if (!result)
+        //    {
+        //        TempData["Error"] = "Failed to delete the assignment.";
+        //    }
+
+        //    return RedirectToAction("Index", new { projectId = projectId });
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid projectId, Guid assignmentId)
         {
-            var result = await _assignmentService.DeleteAssignmentAsync(projectId, assignmentId);
-
-            if (!result)
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
             {
-                TempData["Error"] = "Failed to delete the assignment.";
+                return Unauthorized();
             }
 
-            return RedirectToAction("Index", new { projectId = projectId });
+            var success = await _assignmentService.DeleteAssignmentAsync(projectId, assignmentId, currentUser.Id);
+
+            if (success)
+            {
+                return RedirectToAction(nameof(Index), new { projectId });
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to delete the assignment.");
+            return RedirectToAction(nameof(Index), new { projectId });
         }
 
 
