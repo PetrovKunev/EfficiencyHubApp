@@ -48,48 +48,6 @@ public class ActivityLogService
         }
     }
 
-    //public async Task LogActionAsync(Guid userId, ActionType actionType, string description)
-    //{
-    //    if (userId == Guid.Empty)
-    //    {
-    //        _logger.LogError("Invalid UserId: Guid.Empty. Cannot log action.");
-    //        throw new ArgumentException("UserId cannot be empty.", nameof(userId));
-    //    }
-
-    //    try
-    //    {
-    //        // Проверка дали потребителят съществува
-    //        var userExists = await _userManager.FindByIdAsync(userId.ToString());
-    //        if (userExists == null)
-    //        {
-    //            _logger.LogError("User with ID {UserId} does not exist. Cannot log action.", userId);
-    //            throw new KeyNotFoundException($"User with ID {userId} not found.");
-    //        }
-
-    //        // Създаване на лог записа
-    //        var log = new ActivityLog
-    //        {
-    //            UserId = userId,
-    //            ActionType = actionType,
-    //            Description = description,
-    //            Timestamp = DateTime.UtcNow
-    //        };
-
-    //        await _activityLogRepository.AddAsync(log);
-    //        _logger.LogInformation("Successfully logged action: {ActionType} by User: {UserId}", actionType, userId);
-    //    }
-    //    catch (DbUpdateException dbEx)
-    //    {
-    //        _logger.LogError(dbEx, "Database error while logging action: {ActionType} for User: {UserId}", actionType, userId);
-    //        throw new Exception("An error occurred while saving the log to the database.", dbEx);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex, "Error logging action: {ActionType} for User: {UserId}", actionType, userId);
-    //        throw;
-    //    }
-    //}
-
     public async Task LogActionAsync(Guid userId, ActionType actionType, string description, Guid? relatedId = null, string? relatedEntityType = null)
     {
         try

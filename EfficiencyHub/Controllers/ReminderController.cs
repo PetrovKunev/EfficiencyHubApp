@@ -119,7 +119,6 @@ namespace EfficiencyHub.Web.Controllers
 
             try
             {
-                // Зареждане на напомнянието
                 var reminder = await _reminderService.GetReminderByIdAsync(id, currentUser.Id);
                 if (reminder == null)
                 {
@@ -133,15 +132,14 @@ namespace EfficiencyHub.Web.Controllers
                     return NotFound("Reminder is not associated with a valid assignment.");
                 }
 
-                // Зареждане на ProjectId чрез AssignmentId
                 var projectId = await _assignmentService.GetProjectIdByAssignmentAsync(reminder.AssignmentId);
                 ViewBag.ProjectId = projectId;
 
-                // Зареждане на името на задачата
+                
                 var assignmentName = await _assignmentService.GetAssignmentNameAsync(reminder.AssignmentId);
                 ViewBag.AssignmentName = assignmentName;
 
-                // Преобразуване на модела към ReminderEditViewModel
+               
                 var editModel = new ReminderEditViewModel
                 {
                     Id = reminder.Id,
@@ -150,7 +148,7 @@ namespace EfficiencyHub.Web.Controllers
                     ReminderDate = reminder.ReminderDate
                 };
 
-                return View(editModel); // Изпращаме ReminderEditViewModel към изгледа
+                return View(editModel);
             }
             catch (InvalidOperationException ex)
             {
@@ -216,7 +214,6 @@ namespace EfficiencyHub.Web.Controllers
                 return RedirectToAction("Index");
             }
         }
-
 
     }
 

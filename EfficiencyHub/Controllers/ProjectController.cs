@@ -102,7 +102,6 @@ namespace EfficiencyHub.Web.Controllers
                 return NotFound();
             }
 
-            // Инициализация на възможните роли
             viewModel.AvailableRoles = Enum.GetValues(typeof(ProjectRole)).Cast<ProjectRole>().ToList();
 
             return View(viewModel);

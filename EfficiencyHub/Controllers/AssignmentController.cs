@@ -131,27 +131,6 @@ namespace EfficiencyHub.Web.Controllers
         }
 
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(AssignmentEditViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-
-        //    var success = await _assignmentService.UpdateAssignmentAsync(model);
-
-        //    if (success)
-        //    {
-        //        // Redirect to the Index action, passing the projectId to load tasks for that project
-        //        return RedirectToAction(nameof(Index), new { projectId = model.ProjectId });
-        //    }
-
-        //    ModelState.AddModelError(string.Empty, "Failed to update the assignment. Please try again.");
-        //    return View(model);
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AssignmentEditViewModel model)
@@ -162,7 +141,6 @@ namespace EfficiencyHub.Web.Controllers
                 return View(model);
             }
 
-            // Вземаме текущия потребител
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -182,20 +160,6 @@ namespace EfficiencyHub.Web.Controllers
             ModelState.AddModelError(string.Empty, "Failed to update the assignment. Please try again.");
             return View(model);
         }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Delete(Guid projectId, Guid assignmentId)
-        //{
-        //    var result = await _assignmentService.DeleteAssignmentAsync(projectId, assignmentId);
-
-        //    if (!result)
-        //    {
-        //        TempData["Error"] = "Failed to delete the assignment.";
-        //    }
-
-        //    return RedirectToAction("Index", new { projectId = projectId });
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -218,7 +182,6 @@ namespace EfficiencyHub.Web.Controllers
             return RedirectToAction(nameof(Index), new { projectId });
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Details(Guid projectId, Guid id)
         {
@@ -232,6 +195,5 @@ namespace EfficiencyHub.Web.Controllers
             ViewBag.ProjectId = projectId;
             return View(assignment);
         }
-
     }
 }

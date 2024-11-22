@@ -15,13 +15,11 @@ namespace EfficiencyHub.Web.Controllers
             _userManager = userManager;
         }
 
-        // Метод за извличане на текущия потребител
         protected async Task<ApplicationUser?> GetCurrentUserAsync()
         {
             return await _userManager.GetUserAsync(User);
         }
 
-        // Общ метод за логване на грешки
         protected void LogError(string message, Exception ex)
         {
             _logger.LogError(ex, message);

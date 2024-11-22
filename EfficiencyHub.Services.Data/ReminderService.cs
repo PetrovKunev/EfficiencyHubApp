@@ -88,12 +88,6 @@ namespace EfficiencyHub.Services.Data
             }).ToList();
         }
 
-
-        public async Task DeleteReminderAsync(Guid id)
-        {
-            await _reminderRepository.DeleteAsync(id);
-        }
-
         public async Task CreateReminderAsync(ReminderCreateViewModel model, Guid userId)
         {
             if (model.AssignmentId == Guid.Empty)
