@@ -16,7 +16,10 @@ namespace EfficiencyHub.Data.Models
         public int CompletedTasks { get; set; }
 
         [Precision(18, 2)]
-        public decimal AverageTaskCompletionTime { get; set; } 
+        public decimal AverageTaskCompletionTime { get; set; }
+
+        [Required]
         public DateTime ReportDate { get; set; }
+
     }
 }

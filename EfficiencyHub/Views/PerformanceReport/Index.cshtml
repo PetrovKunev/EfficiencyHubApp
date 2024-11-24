@@ -1,0 +1,67 @@
+﻿@model EfficiencyHub.Web.ViewModels.PerformanceReportViewModel
+@{
+    ViewData["Title"] = "Performance Report";
+}
+
+<h1>Performance Report</h1>
+
+<form method="get" action="@Url.Action("Index", "PerformanceReport")">
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" class="form-control" value="@DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Generate Report</button>
+</form>
+
+
+<hr />
+
+<!-- Отчетни стойности -->
+<h3>Report for Period</h3>
+<ul>
+    <li><strong>Total Completed Tasks:</strong> @Model.CompletedTasks</li>
+    <li><strong>Average Completion Time:</strong> @Model.AverageCompletionTime days</li>
+</ul>
+
+@* <!-- Графика за представяне на данни -->
+<canvas id="chart" width="400" height="400"></canvas>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+                document.addEventListener('DOMContentLoaded', function () {
+            var chartElement = document.getElementById('chart');
+            if (chartElement && chartElement.tagName.toLowerCase() === 'canvas') {
+                var ctx = chartElement.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Completed Tasks', 'Average Completion Time (Days)'],
+                        datasets: [{
+                            label: 'Performance Metrics',
+                            data: [@Model.CompletedTasks, @Model.AverageCompletionTime],
+                            backgroundColor: ['#007bff', '#ffc107'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Chart element is not a canvas or is missing.');
+            }
+        });
+
+    </script>
+} *@

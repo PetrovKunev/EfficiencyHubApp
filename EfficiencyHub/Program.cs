@@ -47,6 +47,7 @@ namespace EfficiencyHub.Web
             builder.Services.AddScoped<AssignmentService>();
             builder.Services.AddScoped<ActivityLogService>();
             builder.Services.AddScoped<ReminderService>();
+            builder.Services.AddScoped<PerformanceReportService>();
 
 
             builder.Services.AddControllersWithViews();

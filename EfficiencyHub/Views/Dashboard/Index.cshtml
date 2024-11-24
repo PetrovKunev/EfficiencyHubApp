@@ -6,11 +6,15 @@
 <!-- Текущо време -->
 <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p>
 
-<!-- Оранжев блок -->
+<!-- Заглавие -->
 <h1 class="text-center"><u>Dashboard</u></h1>
+<!-- Бутоните View My Projects и Reports -->
 <div class="mb-4 text-center">
     <a asp-controller="Project" asp-action="Index" class="btn btn-primary">
         View My Projects
+    </a>
+    <a asp-controller="PerformanceReport" asp-action="Index" class="btn btn-danger ms-2">
+        Reports
     </a>
 </div>
 
