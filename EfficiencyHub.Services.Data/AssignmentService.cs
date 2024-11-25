@@ -65,7 +65,8 @@ namespace EfficiencyHub.Services.Data
                 Description = model.Description,
                 DueDate = model.DueDate,
                 Status = model.Status,
-                IsDeleted = false
+                IsDeleted = false,
+                CreatedDate = DateTime.Now
             };
 
             try
@@ -139,6 +140,11 @@ namespace EfficiencyHub.Services.Data
             assignment.DueDate = model.DueDate;
             assignment.Status = model.Status;
 
+            if (model.Status == AssignmentStatus.Completed)
+            {
+                assignment.CompletedDate = model.CompletedDate ?? DateTime.Now;
+            }
+
             try
             {
                 await _assignmentRepository.UpdateAsync(assignment);
@@ -154,33 +160,6 @@ namespace EfficiencyHub.Services.Data
                 return false;
             }
         }
-
-
-
-        //public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId)
-        //{
-
-        //    var projectAssignment = await _projectAssignmentRepository
-        //        .GetQueryableWhere(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId)
-        //        .FirstOrDefaultAsync();
-
-        //    if (projectAssignment == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    var assignment = projectAssignment.Assignment;
-        //    assignment.IsDeleted = true;
-
-        //    await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
-
-        //    await _assignmentRepository.UpdateAsync(assignment);
-
-        //    await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted assignment '{assignment.Title}'", assignment.Id, "Assignment");
-
-
-        //    return true;
-        //}
 
         public async Task<bool> DeleteAssignmentAsync(Guid projectId, Guid assignmentId, Guid userId)
         {

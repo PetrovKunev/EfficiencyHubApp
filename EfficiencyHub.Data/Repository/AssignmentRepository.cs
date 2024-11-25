@@ -56,13 +56,11 @@ namespace EfficiencyHub.Data.Repository
 
         public IQueryable<Assignment> GetQueryableWhere(Expression<Func<Assignment, bool>> predicate)
         {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-
-            return _context.Tasks.Where(predicate);
+            return _context.Tasks
+                .Include(a => a.ProjectAssignments)
+                .Where(predicate);
         }
+
 
         public Task DeleteEntityAsync(Assignment entity)
         {

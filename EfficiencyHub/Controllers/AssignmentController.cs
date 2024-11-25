@@ -78,7 +78,7 @@ namespace EfficiencyHub.Web.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User); // Вземаме текущия потребител
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return Unauthorized();
@@ -86,7 +86,7 @@ namespace EfficiencyHub.Web.Controllers
 
             try
             {
-                // Предаваме UserId на текущия потребител към сервиза
+               
                 var success = await _assignmentService.CreateAssignmentAsync(model, projectId, user.Id);
                 if (!success)
                 {

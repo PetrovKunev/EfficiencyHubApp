@@ -21,11 +21,17 @@ namespace EfficiencyHub.Web.ViewModels
 
         [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 
         [Required]
         public AssignmentStatus Status { get; set; }
 
         public Guid ProjectId { get; set; }
+
+
+        [Display(Name = "Completed Date")]
+        [DataType(DataType.DateTime)]
+        public DateTime? CompletedDate { get; set; }
     }
 }

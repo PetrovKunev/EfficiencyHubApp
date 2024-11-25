@@ -19,12 +19,18 @@ namespace EfficiencyHub.Data.Models
         public string Description { get; set; } = null!;
         [Required]
         public DateTime DueDate { get; set; }
-        [Required]
         
+        [Required]
         public AssignmentStatus Status { get; set; }
 
         public ICollection<ProjectAssignment> ProjectAssignments { get; set; } = new List<ProjectAssignment>();
 
         public bool IsDeleted { get; set; }
+
+        // Нови полета
+        [Required]
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime? CompletedDate { get; set; }
     }
 }

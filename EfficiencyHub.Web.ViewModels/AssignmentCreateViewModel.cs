@@ -25,5 +25,10 @@ namespace EfficiencyHub.Web.ViewModels
 
         [Required]
         public AssignmentStatus Status { get; set; }
+
+        [Required]
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime? CompletedDate { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using EfficiencyHub.Data.Models;
-using EfficiencyHub.Web.ViewModels;
+using EfficiencyHub.Services.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace EfficiencyHub.Web.Controllers
 {
+    [Authorize]
     public class PerformanceReportController : BaseController
     {
         private readonly PerformanceReportService _performanceReportService;
@@ -22,14 +23,11 @@ namespace EfficiencyHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            _logger.LogInformation("Received StartDate: {StartDate}, EndDate: {EndDate}", startDate, endDate);
+            // Задаване на начални и крайни дати, ако не са предоставени
+            startDate ??= DateTime.UtcNow.AddDays(-7);
+            endDate ??= DateTime.UtcNow;
 
-            if (!startDate.HasValue || !endDate.HasValue)
-            {
-                startDate = DateTime.UtcNow.AddDays(-7);
-                endDate = DateTime.UtcNow;
-            }
-
+            // Взимане на текущия потребител
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
@@ -37,11 +35,10 @@ namespace EfficiencyHub.Web.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            // Генериране на отчета
             var report = await _performanceReportService.GetPerformanceReportAsync(user.Id, startDate.Value, endDate.Value);
 
             return View(report);
         }
-
-
     }
 }
