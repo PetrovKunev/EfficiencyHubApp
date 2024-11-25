@@ -29,9 +29,12 @@ namespace EfficiencyHub.Web.ViewModels
 
         public Guid ProjectId { get; set; }
 
+        public DateTime CreatedDate { get; set; }
 
         [Display(Name = "Completed Date")]
         [DataType(DataType.DateTime)]
+        [CompletedDateValidation]
+        [FutureDateValidation]
         public DateTime? CompletedDate { get; set; }
     }
 }

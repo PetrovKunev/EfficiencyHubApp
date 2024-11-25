@@ -1,1 +1,49 @@
-﻿
+﻿@model EfficiencyHub.Web.ViewModels.PerformanceReportViewModel
+@{
+    ViewData["Title"] = "Performance Report";
+}
+
+<h1>Performance Report</h1>
+
+<form method="get" action="@Url.Action("Index", "PerformanceReport")">
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Generate Report</button>
+</form>
+
+<hr />
+
+<h3>Report Summary</h3>
+<ul>
+    <li><strong>Total Completed Tasks:</strong> @Model.CompletedTasks</li>
+    <li><strong>Average Completion Time:</strong> @Model.AverageCompletionTime days</li>
+</ul>
+
+@* @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Example chart visualization
+        var ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Completed Tasks', 'Average Completion Time'],
+                datasets: [{
+                    label: 'Performance Metrics',
+                    data: [@Model.CompletedTasks, @Model.AverageCompletionTime],
+                    backgroundColor: ['#007bff', '#ffc107']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+} *@

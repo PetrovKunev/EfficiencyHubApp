@@ -21,6 +21,7 @@ namespace EfficiencyHub.Web.ViewModels
 
         [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 
         [Required]

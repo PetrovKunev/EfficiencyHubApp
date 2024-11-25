@@ -122,6 +122,7 @@ namespace EfficiencyHub.Web.Controllers
                 Title = assignment.Title,
                 Description = assignment.Description,
                 DueDate = assignment.DueDate,
+                CreatedDate = assignment.CreatedDate,
                 Status = assignment.Status,
                 ProjectId = projectId
             };

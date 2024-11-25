@@ -2,7 +2,6 @@
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using EfficiencyHub.Common.Enums;
 
 namespace EfficiencyHub.Services.Data
 {
@@ -17,20 +16,23 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<PerformanceReportViewModel> GetPerformanceReportAsync(Guid userId, DateTime startDate, DateTime endDate)
         {
+            // Fetch completed assignments within the date range
             var completedAssignments = await _assignmentRepository
                 .GetQueryableWhere(a => a.ProjectAssignments.Any(pa => pa.UserId == userId) &&
-                                        a.Status == AssignmentStatus.Completed &&
                                         a.CompletedDate.HasValue &&
-                                        a.CompletedDate.Value >= startDate &&
-                                        a.CompletedDate.Value <= endDate)
+                                        a.CompletedDate.Value.Date >= startDate.Date &&
+                                        a.CompletedDate.Value.Date <= endDate.Date)
                 .ToListAsync();
 
+            
             var completedTaskCount = completedAssignments.Count;
 
+            
             var averageCompletionTime = completedTaskCount > 0
                 ? Math.Round(completedAssignments
-                    .Select(a => (a.CompletedDate.Value - a.CreatedDate).TotalDays)
-                    .Average(), 2)
+                      .Where(a => a.CompletedDate.HasValue)
+                      .Select(a => (a.CompletedDate!.Value - a.CreatedDate).TotalDays)
+                      .Average(), 2)
                 : 0;
 
             return new PerformanceReportViewModel
@@ -40,6 +42,5 @@ namespace EfficiencyHub.Services.Data
                 ReportDate = DateTime.UtcNow
             };
         }
-
     }
 }
