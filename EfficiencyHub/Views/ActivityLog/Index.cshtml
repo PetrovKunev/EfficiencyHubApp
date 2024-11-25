@@ -19,7 +19,7 @@
             <tr>
                 <td>@log.Timestamp</td>
                 <td>@log.ActionType</td>
-                <td>@log.Description</td>
+                <td>@Html.Raw(log.Description)</td>
             </tr>
         }
     </tbody>

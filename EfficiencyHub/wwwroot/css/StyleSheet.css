@@ -13928,3 +13928,22 @@ legend {
     line-height: 60px;
 }
 /*# sourceMappingURL=bootstrap.min.css.map */
+
+/*New Dashboard*/
+
+.text-success {
+    color: green;
+    font-weight: bold;
+}
+
+.text-danger {
+    color: red;
+    font-weight: bold;
+}
+
+.text-primary {
+    color: blue;
+    font-weight: bold;
+}
+
+

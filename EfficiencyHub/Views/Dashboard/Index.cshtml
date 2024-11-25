@@ -19,23 +19,21 @@
 </div>
 
 <div class="row mt-4">
-    <!-- Син блок (Projects, Tasks, Completed Tasks) -->
+    <!-- (Projects, All Tasks, Completed Tasks) -->
     <div class="col-md-4">
-        <div>
-            <p>Projects: <b>@Model.ProjectCount</b></p>
-            <p>Tasks: <b>@Model.TaskCount</b></p>
-            <p>Completed Tasks: <b>@Model.CompletedTaskCount</b></p>
-        </div>
+            <p><h5><u>Projects:</u></h5> <b>@Model.ProjectCount</b></p>
+            <p><h5><u>All Tasks:</u></h5><b>@Model.TaskCount</b></p>
+            <p><h5><u>Completed Tasks:</u></h5> <b>@Model.CompletedTaskCount</b></p>
     </div>
 
-    <!-- Зелен блок (Recent Activities) -->
+
     <div class="col-md-4">
         <div>
             <h3>Recent Activities:</h3>
             <ul>
                 @foreach (var log in Model.RecentActivityLogs)
                 {
-                    <li>@log.Description - @log.Timestamp</li>
+                    <li>@Html.Raw(log.Description) - @log.Timestamp.ToString("dd-MM-yyyy HH:mm")</li>
                 }
             </ul>
             <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-secondary mt-2">
@@ -44,7 +42,7 @@
         </div>
     </div>
 
-    <!-- Червен блок (Upcoming Reminders) -->
+    <!-- (Upcoming Reminders) -->
     <div class="col-md-4">
         <div>
             <h3>Upcoming Reminders:</h3>
