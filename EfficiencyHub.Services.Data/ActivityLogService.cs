@@ -57,16 +57,16 @@ namespace EfficiencyHub.Services.Data
             {
                 string detailedDescription;
 
-                // Определяне на иконите и стиловете според типа действие
+                
                 string icon = actionType switch
                 {
                     ActionType.Created => "<span class='text-success'>✅</span>",
                     ActionType.Deleted => "<span class='text-danger'>❌</span>",
                     ActionType.Updated => "<span class='text-primary'>🔄</span>",
-                    _ => "<span class='text-secondary'>ℹ️</span>" // За други действия
+                    _ => "<span class='text-secondary'>ℹ️</span>"
                 };
 
-                // Определяне на описанието според типа свързан обект
+                
                 switch (relatedEntityType)
                 {
                     case "Assignment":
