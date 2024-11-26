@@ -72,16 +72,17 @@ namespace EfficiencyHub.Services.Data
                     case "Assignment":
                         if (relatedId.HasValue)
                         {
-                            var assignment = await _assignmentRepository.GetByIdAsync(relatedId.Value);
+                            var assignment = await _assignmentRepository
+                                .GetQueryableWhere(a => a.Id == relatedId.Value)
+                                .Include(a => a.ProjectAssignments)
+                                .ThenInclude(pa => pa.Project)
+                                .FirstOrDefaultAsync();
+
                             if (assignment != null)
                             {
-                                // Зареждане на проекта, към който е свързана задачата
-                                var projectAssignment = await _projectAssignmentRepository
-                                    .GetQueryableWhere(pa => pa.AssignmentId == assignment.Id)
-                                    .Include(pa => pa.Project) // Ensure the Project is included in the query
-                                    .FirstOrDefaultAsync();
+                                var projectName = assignment.ProjectAssignments
+                                    .FirstOrDefault()?.Project?.Name ?? "Project not found";
 
-                                var projectName = projectAssignment?.Project?.Name ?? "Project not found";
                                 detailedDescription = $"{icon} {actionType} assignment: '{assignment.Title}' (part of project: '{projectName}')";
                             }
                             else
@@ -95,10 +96,15 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
+
                     case "Reminder":
                         if (relatedId.HasValue)
                         {
-                            var reminder = await _reminderRepository.GetByIdAsync(relatedId.Value);
+                            var reminder = await _reminderRepository
+                                .GetQueryableWhere(r => r.Id == relatedId.Value)
+                                .Include(r => r.Assignment)
+                                .FirstOrDefaultAsync();
+
                             if (reminder != null && reminder.Assignment != null)
                             {
                                 detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
@@ -114,10 +120,13 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
+
                     case "Project":
                         if (relatedId.HasValue)
                         {
-                            var project = await _projectRepository.GetByIdAsync(relatedId.Value);
+                            var project = await _projectRepository
+                                .GetByIdAsync(relatedId.Value);
+
                             if (project != null)
                             {
                                 detailedDescription = $"{icon} {actionType} project: '{project.Name}'";
@@ -132,6 +141,7 @@ namespace EfficiencyHub.Services.Data
                             detailedDescription = $"{icon} {actionType} project (details not found).";
                         }
                         break;
+
 
                     default:
                         detailedDescription = $"{icon} {actionType} unknown entity.";
