@@ -150,17 +150,25 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<Guid?> DeleteReminderAsync(Guid id, Guid userId)
         {
-            var reminder = await _reminderRepository.GetByIdAsync(id);
-            if (reminder == null || reminder.UserId != userId)
+            var reminder = await _reminderRepository
+                .GetQueryableWhere(r => r.Id == id && r.UserId == userId)
+                .Include(r => r.Assignment) // Include related assignment for logging
+                .FirstOrDefaultAsync();
+
+            if (reminder == null)
             {
                 return null;
             }
 
             var assignmentId = reminder.AssignmentId;
-            await _reminderRepository.DeleteEntityAsync(reminder);
+            reminder.IsDeleted = true;
+            await _reminderRepository.UpdateAsync(reminder);
 
-            await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted reminder with message '{reminder.Message}'", reminder.Id, "Reminder");
-
+            // Log the deletion along with assignment details
+            var assignmentTitle = reminder.Assignment?.Title ?? "Unknown Assignment";
+            await _activityLogService.LogActionAsync(userId, ActionType.Deleted,
+                $"Deleted reminder with message '{reminder.Message}' (linked to assignment: '{assignmentTitle}')",
+                reminder.Id, "Reminder");
 
             return assignmentId;
         }

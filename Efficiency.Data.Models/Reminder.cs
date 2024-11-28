@@ -22,5 +22,7 @@ namespace EfficiencyHub.Data.Models
 
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; } = null!;
+
+        public bool IsDeleted { get; set; } = false;
     }
 }

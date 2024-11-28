@@ -96,22 +96,29 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
-
                     case "Reminder":
                         if (relatedId.HasValue)
                         {
+                           
                             var reminder = await _reminderRepository
                                 .GetQueryableWhere(r => r.Id == relatedId.Value)
                                 .Include(r => r.Assignment)
                                 .FirstOrDefaultAsync();
 
-                            if (reminder != null && reminder.Assignment != null)
+                            if (reminder != null)
                             {
-                                detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                                if (reminder.Assignment != null)
+                                {
+                                    detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                                }
+                                else
+                                {
+                                    detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (assignment details not found).";
+                                }
                             }
                             else
                             {
-                                detailedDescription = $"{icon} {actionType} reminder (details not found).";
+                                detailedDescription = $"{icon} {actionType} reminder (details not found or already deleted).";
                             }
                         }
                         else
@@ -119,6 +126,7 @@ namespace EfficiencyHub.Services.Data
                             detailedDescription = $"{icon} {actionType} reminder (details not found).";
                         }
                         break;
+
 
 
                     case "Project":
