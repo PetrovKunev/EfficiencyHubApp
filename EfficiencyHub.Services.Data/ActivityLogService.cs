@@ -97,6 +97,29 @@ namespace EfficiencyHub.Services.Data
                         break;
 
 
+                    //case "Reminder":
+                    //    if (relatedId.HasValue)
+                    //    {
+                    //        var reminder = await _reminderRepository
+                    //            .GetQueryableWhere(r => r.Id == relatedId.Value)
+                    //            .Include(r => r.Assignment)
+                    //            .FirstOrDefaultAsync();
+
+                    //        if (reminder != null && reminder.Assignment != null)
+                    //        {
+                    //            detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                    //        }
+                    //        else
+                    //        {
+                    //            detailedDescription = $"{icon} {actionType} reminder (details not found).";
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        detailedDescription = $"{icon} {actionType} reminder (details not found).";
+                    //    }
+                    //    break;
+
                     case "Reminder":
                         if (relatedId.HasValue)
                         {
@@ -108,6 +131,10 @@ namespace EfficiencyHub.Services.Data
                             if (reminder != null && reminder.Assignment != null)
                             {
                                 detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                            }
+                            else if (reminder != null)
+                            {
+                                detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (assignment not found)";
                             }
                             else
                             {
