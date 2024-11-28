@@ -1,5 +1,6 @@
 ﻿using EfficiencyHub.Common.Enums;
 using EfficiencyHub.Data.Models;
+using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -15,19 +16,22 @@ namespace EfficiencyHub.Services.Data
         private readonly IRepository<Project> _projectRepository;
         private readonly ILogger<AssignmentService> _logger;
         private readonly ActivityLogService _activityLogService;
+        private readonly IRepository<Reminder> _reminderRepository;
 
         public AssignmentService(
             IRepository<Assignment> assignmentRepository,
             IRepository<ProjectAssignment> projectAssignmentRepository,
             IRepository<Project> projectRepository,
             ILogger<AssignmentService> logger,
-            ActivityLogService activityLogService)
+            ActivityLogService activityLogService,
+            IRepository<Reminder> reminderRepository)
         {
             _assignmentRepository = assignmentRepository;
             _projectAssignmentRepository = projectAssignmentRepository;
             _projectRepository = projectRepository;
             _logger = logger;
             _activityLogService = activityLogService;
+            _reminderRepository = reminderRepository;
         }
 
 
@@ -165,25 +169,47 @@ namespace EfficiencyHub.Services.Data
         {
             var projectAssignment = await _projectAssignmentRepository
                 .GetQueryableWhere(pa => pa.ProjectId == projectId && pa.AssignmentId == assignmentId)
+                .Include(pa => pa.Assignment)
+                .Include(pa => pa.Project)
                 .FirstOrDefaultAsync();
 
-            if (projectAssignment == null)
+            if (projectAssignment == null || projectAssignment.Assignment == null)
             {
                 return false;
             }
 
+            var projectName = projectAssignment.Project?.Name ?? "Project not found";
+
             var assignment = projectAssignment.Assignment;
             assignment.IsDeleted = true;
 
-            await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
-            await _assignmentRepository.UpdateAsync(assignment);
+            try
+            {
+                var reminders = await _reminderRepository.GetWhereAsync(r => r.AssignmentId == assignment.Id && !r.IsDeleted);
+                foreach (var reminder in reminders)
+                {
+                    reminder.IsDeleted = true;
+                    await _reminderRepository.UpdateAsync(reminder);
 
-            await _activityLogService.LogActionAsync(userId, ActionType.Deleted, $"Deleted assignment '{assignment.Title}'", assignment.Id, "Assignment");
+                    await _activityLogService.LogActionAsync(userId, ActionType.Deleted,
+                        $"Deleted reminder with message '{reminder.Message}' (linked to assignment: '{assignment.Title}')",
+                        reminder.Id, "Reminder");
+                }
 
-            return true;
+                await _assignmentRepository.UpdateAsync(assignment);
+                await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment); // Soft delete на ProjectAssignment
+
+                await _activityLogService.LogActionAsync(userId, ActionType.Deleted,
+                    $"Deleted assignment '{assignment.Title}' (part of project: '{projectName}')", assignment.Id, "Assignment");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting assignment {AssignmentId} and its reminders", assignmentId);
+                return false;
+            }
         }
-
-
         public async Task<AssignmentViewModel?> GetAssignmentDetailsByIdAsync(Guid projectId, Guid assignmentId)
         {
             var projectAssignments = await _projectAssignmentRepository

@@ -55,7 +55,7 @@ namespace EfficiencyHub.Data.Repository
 
         public async Task<IEnumerable<Reminder>> GetWhereAsync(Expression<Func<Reminder, bool>> predicate)
         {
-            // Exclude deleted reminders by default
+            
             return await _context.Reminders
                 .Where(r => !r.IsDeleted)
                 .Where(predicate)

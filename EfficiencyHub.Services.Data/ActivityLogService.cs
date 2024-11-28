@@ -57,7 +57,6 @@ namespace EfficiencyHub.Services.Data
             {
                 string detailedDescription;
 
-                
                 string icon = actionType switch
                 {
                     ActionType.Created => "<span class='text-success'>✅</span>",
@@ -66,7 +65,6 @@ namespace EfficiencyHub.Services.Data
                     _ => "<span class='text-secondary'>ℹ️</span>"
                 };
 
-                
                 switch (relatedEntityType)
                 {
                     case "Assignment":
@@ -74,7 +72,7 @@ namespace EfficiencyHub.Services.Data
                         {
                             var assignment = await _assignmentRepository
                                 .GetQueryableWhere(a => a.Id == relatedId.Value)
-                                .Include(a => a.ProjectAssignments)
+                                .Include(a => a.ProjectAssignments.Where(pa => !pa.IsDeleted))
                                 .ThenInclude(pa => pa.Project)
                                 .FirstOrDefaultAsync();
 
@@ -96,10 +94,10 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
+
                     case "Reminder":
                         if (relatedId.HasValue)
                         {
-                           
                             var reminder = await _reminderRepository
                                 .GetQueryableWhere(r => r.Id == relatedId.Value)
                                 .Include(r => r.Assignment)
@@ -127,13 +125,10 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
-
-
                     case "Project":
                         if (relatedId.HasValue)
                         {
-                            var project = await _projectRepository
-                                .GetByIdAsync(relatedId.Value);
+                            var project = await _projectRepository.GetByIdAsync(relatedId.Value);
 
                             if (project != null)
                             {
@@ -149,7 +144,6 @@ namespace EfficiencyHub.Services.Data
                             detailedDescription = $"{icon} {actionType} project (details not found).";
                         }
                         break;
-
 
                     default:
                         detailedDescription = $"{icon} {actionType} unknown entity.";

@@ -36,13 +36,12 @@ namespace EfficiencyHub.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-       
-
-
         public async Task<IEnumerable<ProjectAssignment>> GetWhereAsync(Expression<Func<ProjectAssignment, bool>> predicate)
         {
             return await _context.ProjectAssignments
-                .Include(pa => pa.Assignment) // Include related Assignment entities
+                .Include(pa => pa.Assignment)
+                .Include(pa => pa.Project)
+                .Where(pa => !pa.IsDeleted)
                 .Where(predicate)
                 .ToListAsync();
         }
@@ -51,21 +50,26 @@ namespace EfficiencyHub.Data.Repository
         {
             return _context.ProjectAssignments
                 .Include(pa => pa.Assignment)
+                .Include(pa => pa.Project)
+                .Where(pa => !pa.IsDeleted)
                 .Where(predicate);
-        }
-
-        public Task DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task DeleteEntityAsync(ProjectAssignment entity)
         {
             if (entity != null)
             {
-                _context.ProjectAssignments.Remove(entity);
+                entity.IsDeleted = true;
+                _context.ProjectAssignments.Update(entity);
                 await _context.SaveChangesAsync();
             }
         }
+
+
+        public Task DeleteAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

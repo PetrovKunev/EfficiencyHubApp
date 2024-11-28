@@ -21,16 +21,19 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<IEnumerable<ReminderViewModel>> GetRemindersForUserAsync(Guid userId)
         {
-            var reminders = await _reminderRepository.GetWhereAsync(r => r.UserId == userId);
+            // Филтрираме само напомнянията, които не са изтрити
+            var reminders = await _reminderRepository.GetWhereAsync(r => r.UserId == userId && !r.IsDeleted);
+
             return reminders.Select(r => new ReminderViewModel
             {
                 Id = r.Id,
                 Message = r.Message,
                 ReminderDate = r.ReminderDate,
                 AssignmentId = r.AssignmentId,
-                AssignmentTitle = r.Assignment.Title
+                AssignmentTitle = r.Assignment?.Title ?? "Unknown Assignment"
             });
         }
+
 
         public async Task<ReminderEditViewModel?> GetReminderByIdAsync(Guid id)
         {
@@ -77,14 +80,14 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<IEnumerable<ReminderViewModel>> GetRemindersByAssignmentAsync(Guid assignmentId, Guid userId)
         {
-            var reminders = await _reminderRepository.GetWhereAsync(r => r.AssignmentId == assignmentId && r.UserId == userId);
+            var reminders = await _reminderRepository.GetWhereAsync(r => r.AssignmentId == assignmentId && r.UserId == userId && !r.IsDeleted);
 
             return reminders.Select(r => new ReminderViewModel
             {
                 Id = r.Id,
                 Message = r.Message,
                 ReminderDate = r.ReminderDate,
-                AssignmentName = r.Assignment?.Title ?? "Unknown Assignment" 
+                AssignmentName = r.Assignment?.Title ?? "Unknown Assignment"
             }).ToList();
         }
 

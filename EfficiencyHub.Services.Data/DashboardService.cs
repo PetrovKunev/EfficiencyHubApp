@@ -27,7 +27,7 @@ namespace EfficiencyHub.Services.Data
             var projects = await _projectRepository.GetAllAsync();
             var tasks = await _assignmentRepository.GetAllAsync();
             var activityLogs = await _activityLogRepository.GetAllAsync();
-            var reminders = await _reminderRepository.GetAllAsync();
+            var reminders = await _reminderRepository.GetWhereAsync(r => !r.IsDeleted);
 
             var activeProjects = projects.Where(p => !p.IsDeleted);
             var activeTasks = tasks.Where(t => !t.IsDeleted);
@@ -38,7 +38,10 @@ namespace EfficiencyHub.Services.Data
                 TaskCount = activeTasks.Count(),
                 CompletedTaskCount = activeTasks.Count(t => t.Status == AssignmentStatus.Completed),
                 RecentActivityLogs = activityLogs.OrderByDescending(a => a.Timestamp).Take(5),
-                UpcomingReminders = reminders.Where(r => r.ReminderDate > DateTime.Now).OrderBy(r => r.ReminderDate).Take(5)
+                UpcomingReminders = reminders
+                                    .Where(r => r.ReminderDate > DateTime.Now)
+                                    .OrderBy(r => r.ReminderDate)
+                                    .Take(5)
             };
         }
     }
