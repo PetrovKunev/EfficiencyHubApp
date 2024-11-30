@@ -1,5 +1,6 @@
 ﻿using EfficiencyHub.Data.Models;
 using EfficiencyHub.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace EfficiencyHub.Web.Controllers
         {
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> LandingPage()
         {
             var currentUser = await GetCurrentUserAsync();

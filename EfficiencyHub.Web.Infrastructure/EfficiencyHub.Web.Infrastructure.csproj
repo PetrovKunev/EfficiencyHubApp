@@ -14,4 +14,8 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Efficiency.Data.Models\EfficiencyHub.Data.Models.csproj" />
+  </ItemGroup>
+
 </Project>
