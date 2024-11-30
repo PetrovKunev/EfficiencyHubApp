@@ -6,6 +6,7 @@ using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Web.Infrastructure.Data;
+using Microsoft.AspNetCore.Builder;
 
 
 namespace EfficiencyHub.Web
@@ -16,7 +17,6 @@ namespace EfficiencyHub.Web
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             string connectionString = builder.Configuration.GetConnectionString("SQLServer") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -38,6 +38,16 @@ namespace EfficiencyHub.Web
             {
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.Redirect("/Home/LandingPage");
+                    return Task.CompletedTask;
+                };
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.Redirect(options.AccessDeniedPath);
+                    return Task.CompletedTask;
+                };
             });
 
 
@@ -53,9 +63,7 @@ namespace EfficiencyHub.Web
             builder.Services.AddScoped<ReminderService>();
             builder.Services.AddScoped<PerformanceReportService>();
 
-
             builder.Services.AddControllersWithViews();
-
 
             var app = builder.Build();
 
@@ -89,18 +97,28 @@ namespace EfficiencyHub.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=AdminDashboard}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
-                name: "Аdmin",
-                pattern: "{controller=AdminDashboard}/{action=Index}/{id?}");
+                name: "dashboard",
+                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=LandingPage}/{id?}");
 
             app.MapRazorPages();
 
+            app.UseEndpoints(endpoints =>
+            {
+                foreach (var endpoint in endpoints.DataSources.SelectMany(ds => ds.Endpoints))
+                {
+                    Console.WriteLine(endpoint.DisplayName);
+                }
+            });
+
             app.Run();
         }
-
     }
 }

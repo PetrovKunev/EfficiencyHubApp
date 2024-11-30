@@ -12,10 +12,19 @@ namespace EfficiencyHub.Web.Infrastructure.Data
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+                    var result = await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+                    if (result.Succeeded)
+                    {
+                        Console.WriteLine($"Role '{roleName}' created successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error creating role '{roleName}': {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    }
                 }
             }
         }
+
 
         public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager)
         {
