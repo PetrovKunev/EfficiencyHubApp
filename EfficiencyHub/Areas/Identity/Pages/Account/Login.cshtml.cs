@@ -25,10 +25,13 @@ namespace EfficiencyHub.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager,
+                          UserManager<ApplicationUser> userManager,
+                          ILogger<LoginModel> logger)
         {
-            _signInManager = signInManager;
-            _logger = logger;
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -170,7 +173,7 @@ namespace EfficiencyHub.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed.
+
             return Page();
         }
 

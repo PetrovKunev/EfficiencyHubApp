@@ -49,6 +49,5 @@ namespace EfficiencyHub.Web.Infrastructure.Data
             }
         }
 
-
     }
 }

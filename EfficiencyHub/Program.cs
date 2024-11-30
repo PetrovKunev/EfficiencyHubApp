@@ -110,13 +110,13 @@ namespace EfficiencyHub.Web
 
             app.MapRazorPages();
 
-            app.UseEndpoints(endpoints =>
-            {
-                foreach (var endpoint in endpoints.DataSources.SelectMany(ds => ds.Endpoints))
-                {
-                    Console.WriteLine(endpoint.DisplayName);
-                }
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    foreach (var endpoint in endpoints.DataSources.SelectMany(ds => ds.Endpoints))
+            //    {
+            //        Console.WriteLine(endpoint.DisplayName);
+            //    }
+            //});
 
             app.Run();
         }
