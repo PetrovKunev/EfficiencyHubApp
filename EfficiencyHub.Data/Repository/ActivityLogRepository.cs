@@ -26,7 +26,7 @@ namespace EfficiencyHub.Data.Repository
 
         public async Task<ActivityLog> GetByIdAsync(Guid id)
         {
-            return await _context.Set<ActivityLog>().FindAsync(id);
+            return await _context.Set<ActivityLog>().FindAsync(id) ?? throw new InvalidOperationException("ActivityLog not found");
         }
 
         public async Task<IEnumerable<ActivityLog>> GetAllAsync()
@@ -71,5 +71,6 @@ namespace EfficiencyHub.Data.Repository
             _context.Set<ActivityLog>().Remove(entity);
             await _context.SaveChangesAsync();
         }
+
     }
 }

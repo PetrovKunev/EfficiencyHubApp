@@ -19,7 +19,7 @@ namespace EfficiencyHub.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
@@ -29,7 +29,17 @@ namespace EfficiencyHub.Web.Controllers
 
             try
             {
-                var activityLogs = await _activityLogService.GetLastUserActionsAsync(currentUser.Id);
+                // Обща сума записи
+                var totalLogs = await _activityLogService.GetTotalLogsAsync(currentUser.Id);
+                var totalPages = (int)Math.Ceiling(totalLogs / (double)pageSize);
+
+                // Взимане на записите за текущата страница
+                var activityLogs = await _activityLogService.GetPagedUserActionsAsync(currentUser.Id, pageNumber, pageSize);
+
+                ViewData["CurrentPage"] = pageNumber;
+                ViewData["PageSize"] = pageSize;
+                ViewData["TotalPages"] = totalPages;
+
                 return View(activityLogs);
             }
             catch (Exception ex)
@@ -38,5 +48,6 @@ namespace EfficiencyHub.Web.Controllers
                 return RedirectToAction("Error", "Home");
             }
         }
+
     }
 }

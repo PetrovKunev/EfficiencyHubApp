@@ -9,7 +9,7 @@ namespace EfficiencyHub.Web.Controllers
   [Authorize] 
   public class DashboardController : BaseController
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly new UserManager<ApplicationUser> _userManager;
         private readonly DashboardService _dashboardService;
 
         public DashboardController(ILogger<BaseController> logger, UserManager<ApplicationUser> userManager, DashboardService dashboardService) : base(logger, userManager)
@@ -31,14 +31,14 @@ namespace EfficiencyHub.Web.Controllers
 
             _logger.LogInformation("Current user retrieved: {UserId}", currentUser.Id);
 
-            // Пренасочване на администраторите
+            
             if (await _userManager.IsInRoleAsync(currentUser, "Administrator"))
             {
                 _logger.LogInformation("User is in Administrator role. Redirecting to AdminDashboard.");
                 return RedirectToAction("Index", "AdminDashboard", new { area = "Admin" });
             }
 
-            // Зареждане на данните за таблото на обикновен потребител
+            
             _logger.LogInformation("User is not an Administrator. Fetching dashboard data.");
             var dashboardData = await _dashboardService.GetDashboardDataAsync();
             _logger.LogInformation("Dashboard data retrieved successfully.");

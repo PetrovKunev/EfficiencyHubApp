@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EfficiencyHub.Web.ViewModels.ActivityLogViewModel>
+﻿@* @model IEnumerable<EfficiencyHub.Web.ViewModels.ActivityLogViewModel>
 @{
     ViewData["Title"] = "Logs";
 }
@@ -23,4 +23,55 @@
             </tr>
         }
     </tbody>
+</table> *@
+
+@model IEnumerable<ActivityLogViewModel>
+@{
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int pageSize = ViewData["PageSize"] as int? ?? 10;
+    int totalPages = ViewData["TotalPages"] as int? ?? 1;
+    var previousPage = currentPage - 1;
+    var nextPage = currentPage + 1;
+    var isPreviousDisabled = currentPage == 1 ? "disabled" : "";
+    var isNextDisabled = currentPage == totalPages ? "disabled" : "";
+    ViewData["Title"] = "Activity Logs";
+}
+
+<h2>Activity Logs</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.Timestamp</td>
+                <td>@log.ActionType</td>
+                <td>@Html.Raw(log.Description)</td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+<div class="pagination d-flex justify-content-between align-items-center mt-4">
+    <a asp-action="Index"
+       asp-route-pageNumber="@previousPage"
+       asp-route-pageSize="@pageSize"
+       class="btn btn-primary @isPreviousDisabled">
+        Previous
+    </a>
+    <span>Page @currentPage of @totalPages</span>
+    <a asp-action="Index"
+       asp-route-pageNumber="@nextPage"
+       asp-route-pageSize="@pageSize"
+       class="btn btn-primary @isNextDisabled">
+        Next
+    </a>
+</div>
+
