@@ -55,22 +55,34 @@ namespace EfficiencyHub.Data.Repository
 
         public async Task<IEnumerable<Reminder>> GetWhereAsync(Expression<Func<Reminder, bool>> predicate)
         {
-            return await _context.Reminders.Where(predicate).ToListAsync();
+            
+            return await _context.Reminders
+                .Where(r => !r.IsDeleted)
+                .Where(predicate)
+                .ToListAsync();
         }
 
         public IQueryable<Reminder> GetQueryableWhere(Expression<Func<Reminder, bool>> predicate)
         {
+            // Не филтрираме по IsDeleted, за да се включат всички напомняния
             return _context.Reminders.Where(predicate);
+        }
+
+        public async Task SoftDeleteAsync(Guid id)
+        {
+            var reminder = await GetByIdAsync(id);
+            if (reminder != null)
+            {
+                reminder.IsDeleted = true;
+                _context.Reminders.Update(reminder);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteEntityAsync(Reminder entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity), "Entity cannot be null.");
-            }
-
-            _context.Reminders.Remove(entity);
+            entity.IsDeleted = true;
+            _context.Reminders.Update(entity);
             await _context.SaveChangesAsync();
         }
 

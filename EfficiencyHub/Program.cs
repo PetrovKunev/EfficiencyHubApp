@@ -4,9 +4,9 @@ using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
+using EfficiencyHub.Web.Infrastructure.Data;
+using Microsoft.AspNetCore.Builder;
 
 
 namespace EfficiencyHub.Web
@@ -17,7 +17,6 @@ namespace EfficiencyHub.Web
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             string connectionString = builder.Configuration.GetConnectionString("SQLServer") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -35,8 +34,23 @@ namespace EfficiencyHub.Web
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            // Configure the Localization - set the default culture; another class for this for optimization
-            
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.Redirect("/Home/LandingPage");
+                    return Task.CompletedTask;
+                };
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.Redirect(options.AccessDeniedPath);
+                    return Task.CompletedTask;
+                };
+            });
+
+
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
             builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();
@@ -49,9 +63,7 @@ namespace EfficiencyHub.Web
             builder.Services.AddScoped<ReminderService>();
             builder.Services.AddScoped<PerformanceReportService>();
 
-
             builder.Services.AddControllersWithViews();
-
 
             var app = builder.Build();
 
@@ -68,11 +80,13 @@ namespace EfficiencyHub.Web
                 app.UseHsts();
             }
 
-            // Seed roles
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-                await EnsureRolesAsync(roleManager);
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await RoleSeeder.EnsureRolesAsync(roleManager);
+                await RoleSeeder.EnsureAdminUserAsync(userManager);
             }
 
             app.UseHttpsRedirection();
@@ -84,25 +98,27 @@ namespace EfficiencyHub.Web
             app.UseAuthorization();
 
             app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=AdminDashboard}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "dashboard",
+                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=LandingPage}/{id?}");
+
             app.MapRazorPages();
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    foreach (var endpoint in endpoints.DataSources.SelectMany(ds => ds.Endpoints))
+            //    {
+            //        Console.WriteLine(endpoint.DisplayName);
+            //    }
+            //});
 
             app.Run();
         }
-
-        // Find another place for this
-        private static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
-        {
-            string[] roleNames = { "User", "Administrator" };
-            foreach (var roleName in roleNames)
-            {
-                if (!await roleManager.RoleExistsAsync(roleName))
-                {
-                    await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
-                }
-            }
-        }
-
     }
 }

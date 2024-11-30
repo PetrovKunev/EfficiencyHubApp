@@ -24,6 +24,7 @@
     <ProjectReference Include="..\EfficiencyHub.Common\EfficiencyHub.Common.csproj" />
     <ProjectReference Include="..\EfficiencyHub.Data\EfficiencyHub.Data.csproj" />
     <ProjectReference Include="..\EfficiencyHub.Services.Data\EfficiencyHub.Services.Data.csproj" />
+    <ProjectReference Include="..\EfficiencyHub.Web.Infrastructure\EfficiencyHub.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\EfficiencyHub.Web.ViewModels\EfficiencyHub.Web.ViewModels.csproj" />
   </ItemGroup>
 

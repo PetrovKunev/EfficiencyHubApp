@@ -57,7 +57,6 @@ namespace EfficiencyHub.Services.Data
             {
                 string detailedDescription;
 
-                
                 string icon = actionType switch
                 {
                     ActionType.Created => "<span class='text-success'>✅</span>",
@@ -66,7 +65,6 @@ namespace EfficiencyHub.Services.Data
                     _ => "<span class='text-secondary'>ℹ️</span>"
                 };
 
-                
                 switch (relatedEntityType)
                 {
                     case "Assignment":
@@ -74,7 +72,7 @@ namespace EfficiencyHub.Services.Data
                         {
                             var assignment = await _assignmentRepository
                                 .GetQueryableWhere(a => a.Id == relatedId.Value)
-                                .Include(a => a.ProjectAssignments)
+                                .Include(a => a.ProjectAssignments.Where(pa => !pa.IsDeleted))
                                 .ThenInclude(pa => pa.Project)
                                 .FirstOrDefaultAsync();
 
@@ -128,9 +126,16 @@ namespace EfficiencyHub.Services.Data
                                 .Include(r => r.Assignment)
                                 .FirstOrDefaultAsync();
 
-                            if (reminder != null && reminder.Assignment != null)
+                            if (reminder != null)
                             {
-                                detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                                if (reminder.Assignment != null)
+                                {
+                                    detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (linked to assignment: '{reminder.Assignment.Title}')";
+                                }
+                                else
+                                {
+                                    detailedDescription = $"{icon} {actionType} reminder: '{reminder.Message}' (assignment details not found).";
+                                }
                             }
                             else if (reminder != null)
                             {
@@ -138,7 +143,7 @@ namespace EfficiencyHub.Services.Data
                             }
                             else
                             {
-                                detailedDescription = $"{icon} {actionType} reminder (details not found).";
+                                detailedDescription = $"{icon} {actionType} reminder (details not found or already deleted).";
                             }
                         }
                         else
@@ -147,12 +152,10 @@ namespace EfficiencyHub.Services.Data
                         }
                         break;
 
-
                     case "Project":
                         if (relatedId.HasValue)
                         {
-                            var project = await _projectRepository
-                                .GetByIdAsync(relatedId.Value);
+                            var project = await _projectRepository.GetByIdAsync(relatedId.Value);
 
                             if (project != null)
                             {
@@ -168,7 +171,6 @@ namespace EfficiencyHub.Services.Data
                             detailedDescription = $"{icon} {actionType} project (details not found).";
                         }
                         break;
-
 
                     default:
                         detailedDescription = $"{icon} {actionType} unknown entity.";
