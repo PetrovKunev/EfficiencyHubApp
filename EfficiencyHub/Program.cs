@@ -4,9 +4,8 @@ using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
+using EfficiencyHub.Web.Infrastructure.Data;
 
 
 namespace EfficiencyHub.Web
@@ -34,8 +33,6 @@ namespace EfficiencyHub.Web
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
-            // Configure the Localization - set the default culture; another class for this for optimization
             
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
@@ -68,11 +65,13 @@ namespace EfficiencyHub.Web
                 app.UseHsts();
             }
 
-            // Seed roles
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-                await EnsureRolesAsync(roleManager);
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await RoleSeeder.EnsureRolesAsync(roleManager);
+                await RoleSeeder.EnsureAdminUserAsync(userManager);
             }
 
             app.UseHttpsRedirection();
@@ -83,25 +82,17 @@ namespace EfficiencyHub.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+
+            app.MapControllerRoute(
+                name: "Аdmin",
+                pattern: "{controller=AdminDashboard}/{action=Index}/{id?}");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=LandingPage}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();
-        }
-
-        // Find another place for this
-        private static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
-        {
-            string[] roleNames = { "User", "Administrator" };
-            foreach (var roleName in roleNames)
-            {
-                if (!await roleManager.RoleExistsAsync(roleName))
-                {
-                    await roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
-                }
-            }
         }
 
     }
