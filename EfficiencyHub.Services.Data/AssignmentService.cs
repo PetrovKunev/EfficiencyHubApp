@@ -197,7 +197,7 @@ namespace EfficiencyHub.Services.Data
                 }
 
                 await _assignmentRepository.UpdateAsync(assignment);
-                await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment); // Soft delete на ProjectAssignment
+                await _projectAssignmentRepository.DeleteEntityAsync(projectAssignment);
 
                 await _activityLogService.LogActionAsync(userId, ActionType.Deleted,
                     $"Deleted assignment '{assignment.Title}' (part of project: '{projectName}')", assignment.Id, "Assignment");
@@ -265,6 +265,47 @@ namespace EfficiencyHub.Services.Data
 
             _logger.LogInformation($"Found ProjectId: {projectAssignment.ProjectId} for AssignmentId: {assignmentId}");
             return projectAssignment.ProjectId;
+        }
+
+        public async Task<IEnumerable<AssignmentViewModel>> GetFilteredAssignmentsAsync(AssignmentFilterViewModel filters, Guid projectId)
+        {
+            
+            var query = _assignmentRepository.GetQueryableWhere(a =>
+                a.ProjectAssignments.Any(pa => pa.ProjectId == projectId));
+
+            
+            if (!string.IsNullOrEmpty(filters.Title))
+            {
+                query = query.Where(a => a.Title.Contains(filters.Title));
+            }
+
+            if (filters.DueDateFrom.HasValue)
+            {
+                query = query.Where(a => a.DueDate >= filters.DueDateFrom.Value);
+            }
+
+            if (filters.DueDateTo.HasValue)
+            {
+                query = query.Where(a => a.DueDate <= filters.DueDateTo.Value);
+            }
+
+            if (filters.Status.HasValue)
+            {
+                query = query.Where(a => a.Status == filters.Status.Value);
+            }
+
+            
+            var assignments = await query.ToListAsync();
+
+            return assignments.Select(a => new AssignmentViewModel
+            {
+                Id = a.Id,
+                Title = a.Title,
+                Description = a.Description,
+                DueDate = a.DueDate,
+                Status = a.Status,
+                IsDeleted = a.IsDeleted
+            }).ToList();
         }
 
     }

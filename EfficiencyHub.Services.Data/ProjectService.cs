@@ -37,7 +37,6 @@ namespace EfficiencyHub.Services.Data
 
             await _projectRepository.AddAsync(project);
 
-            // Log the action
             await _activityLogService.LogActionAsync(userId, ActionType.Created, $"Created project '{project.Name}'", project.Id, "Project");
 
             return true;
@@ -134,7 +133,13 @@ namespace EfficiencyHub.Services.Data
             return true;
         }
 
-        public async Task<dynamic> GetProjectNameAsync(Guid projectId)
+        //public async Task<dynamic> GetProjectNameAsync(Guid projectId)
+        //{
+        //    var project = await _projectRepository.GetByIdAsync(projectId);
+        //    return project?.Name ?? "Unknown Project";
+        //}
+
+        public async Task<string> GetProjectNameAsync(Guid projectId)
         {
             var project = await _projectRepository.GetByIdAsync(projectId);
             return project?.Name ?? "Unknown Project";

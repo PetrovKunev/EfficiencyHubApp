@@ -196,5 +196,26 @@ namespace EfficiencyHub.Web.Controllers
             ViewBag.ProjectId = projectId;
             return View(assignment);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Filter(AssignmentFilterViewModel filters, Guid projectId)
+        {
+            try
+            {
+                
+                var assignments = await _assignmentService.GetFilteredAssignmentsAsync(filters, projectId);
+
+                ViewBag.ProjectId = projectId;
+                ViewBag.ProjectName = await _projectService.GetProjectNameAsync(projectId);
+
+                return View("Index", assignments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while filtering assignments.");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
     }
 }

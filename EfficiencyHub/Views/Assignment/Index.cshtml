@@ -5,6 +5,36 @@
 
 <h2>Assignments for Project: @ViewBag.ProjectName</h2>
 
+<!-- Filter Form -->
+<form method="post" asp-action="Filter" asp-route-projectId="@ViewBag.ProjectId">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="Title" class="form-label">Title</label>
+            <input type="text" id="Title" name="Title" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="DueDateFrom" class="form-label">Due Date (From)</label>
+            <input type="date" id="DueDateFrom" name="DueDateFrom" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="DueDateTo" class="form-label">Due Date (To)</label>
+            <input type="date" id="DueDateTo" name="DueDateTo" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="Status" class="form-label">Status</label>
+            <select id="Status" name="Status" class="form-select">
+                <option value="">Select Status</option>
+                @foreach (var status in Enum.GetValues(typeof(EfficiencyHub.Common.Enums.AssignmentStatus)))
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a asp-action="Index" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-secondary">Clear Filters</a>
+</form>
+
 <table class="table">
     <thead>
         <tr>
