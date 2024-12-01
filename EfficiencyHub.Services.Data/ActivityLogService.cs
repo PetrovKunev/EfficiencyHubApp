@@ -181,5 +181,52 @@ namespace EfficiencyHub.Services.Data
             }
         }
 
+        public async Task<(IEnumerable<ActivityLogViewModel> Items, int TotalCount)> SearchActivityLogsAsync(Guid userId, string? searchTerm, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var query = _activityLogRepository.GetQueryableWhere(log => log.UserId == userId);
+
+                // Apply filters that can be translated to SQL
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    query = query.Where(log => log.Description.Contains(searchTerm));
+                }
+
+                // Fetch logs from the database
+                var totalCount = await query.CountAsync();
+
+                var logs = await query
+                    .OrderByDescending(log => log.Timestamp)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Apply in-memory filtering for properties like ActionType.ToString()
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    logs = logs.Where(log =>
+                        log.ActionType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                // Map to the ViewModel
+                var logViewModels = logs.Select(log => new ActivityLogViewModel
+                {
+                    Timestamp = log.Timestamp,
+                    ActionType = log.ActionType.ToString(),
+                    Description = log.Description
+                });
+
+                return (logViewModels, totalCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching activity logs.");
+                throw;
+            }
+        }
+
+
+
     }
 }
