@@ -6,7 +6,6 @@ using EfficiencyHub.Services.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Web.Infrastructure.Data;
-using Microsoft.AspNetCore.Builder;
 
 
 namespace EfficiencyHub.Web
@@ -67,16 +66,10 @@ namespace EfficiencyHub.Web
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            
+            if (!app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Home/Handle500");
                 app.UseHsts();
             }
 
@@ -91,9 +84,8 @@ namespace EfficiencyHub.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -109,14 +101,6 @@ namespace EfficiencyHub.Web
                 pattern: "{controller=Home}/{action=LandingPage}/{id?}");
 
             app.MapRazorPages();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    foreach (var endpoint in endpoints.DataSources.SelectMany(ds => ds.Endpoints))
-            //    {
-            //        Console.WriteLine(endpoint.DisplayName);
-            //    }
-            //});
 
             app.Run();
         }

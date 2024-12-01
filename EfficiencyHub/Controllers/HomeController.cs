@@ -35,6 +35,29 @@ namespace EfficiencyHub.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [Route("/Home/HandleError/{code:int}")]
+        public IActionResult HandleError(int code)
+        {
+            
+            if (code == 404)
+            {
+                return View("Error404");
+            }
+                       
+            ViewData["ErrorMessage"] = $"Error occurred. The ErrorCode is: {code}";
+            return View("GenericError");
+        }
+
+        [Route("/Home/Handle500")]
+        public IActionResult Handle500()
+        {
+            return View("Error500");
+        }
+        public IActionResult Simulate500()
+        {
+            throw new Exception("This is a simulated 500 error.");
+        }
     }
 
 }

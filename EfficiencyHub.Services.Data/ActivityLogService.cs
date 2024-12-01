@@ -30,34 +30,8 @@ namespace EfficiencyHub.Services.Data
             _projectAssignmentRepository = projectAssignmentRepository;
         }
 
-        //public async Task<IEnumerable<ActivityLogViewModel>> GetUserActionsAsync(Guid userId, int pageNumber = 1, int pageSize = 20)
-        //{
-        //    try
-        //    {
-        //        var logs = await _activityLogRepository
-        //            .GetQueryableWhere(a => a.UserId == userId)
-        //            .OrderByDescending(log => log.Timestamp)
-        //            .Skip((pageNumber - 1) * pageSize)
-        //            .Take(pageSize)
-        //            .ToListAsync();
-
-        //        return logs.Select(log => new ActivityLogViewModel
-        //        {
-        //            Timestamp = log.Timestamp,
-        //            ActionType = log.ActionType.ToString(),
-        //            Description = log.Description
-        //        }).ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error retrieving user activity logs.");
-        //        throw;
-        //    }
-        //}
-
         public async Task<int> GetTotalLogsAsync(Guid userId)
         {
-            // Връща общия брой записи за даден потребител
             return await _activityLogRepository.GetQueryableWhere(a => a.UserId == userId).CountAsync();
         }
 
@@ -67,8 +41,8 @@ namespace EfficiencyHub.Services.Data
             {
                 var logs = await _activityLogRepository.GetQueryableWhere(a => a.UserId == userId)
                     .OrderByDescending(log => log.Timestamp)
-                    .Skip((pageNumber - 1) * pageSize) // Пропуска записите за предишните страници
-                    .Take(pageSize) // Взима само записите за текущата страница
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
                 return logs.Select(log => new ActivityLogViewModel

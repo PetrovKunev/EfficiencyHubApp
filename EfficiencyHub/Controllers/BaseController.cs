@@ -24,5 +24,6 @@ namespace EfficiencyHub.Web.Controllers
         {
             _logger.LogError(ex, message);
         }
+
     }
 }
