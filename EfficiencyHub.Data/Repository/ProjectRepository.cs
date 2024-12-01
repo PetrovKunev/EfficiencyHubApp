@@ -54,7 +54,7 @@ namespace EfficiencyHub.Data.Repository
 
         public IQueryable<Project> GetQueryableWhere(Expression<Func<Project, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return predicate == null ? throw new ArgumentNullException(nameof(predicate)) : _context.Projects.Where(predicate);
         }
 
         public Task DeleteEntityAsync(Project entity)

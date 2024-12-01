@@ -54,10 +54,7 @@ namespace EfficiencyHub.Web.Controllers
         {
             return View("Error500");
         }
-        public IActionResult Simulate500()
-        {
-            throw new Exception("This is a simulated 500 error.");
-        }
+
     }
 
 }

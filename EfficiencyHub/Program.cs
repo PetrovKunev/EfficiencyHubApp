@@ -66,7 +66,6 @@ namespace EfficiencyHub.Web
 
             var app = builder.Build();
 
-            
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Handle500");

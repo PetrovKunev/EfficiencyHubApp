@@ -10,6 +10,33 @@
     <a asp-action="Create" class="btn btn-primary">Create New Project</a>
 </div>
 
+<form method="post" asp-action="Filter">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="Name" class="form-label">Project Name</label>
+            <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter project name" />
+        </div>
+        <div class="col-md-3">
+            <label for="StartDate" class="form-label">Start Date</label>
+            <input type="date" id="StartDate" name="StartDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="EndDate" class="form-label">End Date</label>
+            <input type="date" id="EndDate" name="EndDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="Status" class="form-label">Status</label>
+            <select id="Status" name="Status" class="form-select">
+                <option value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Deleted">Deleted</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a asp-action="Index" class="btn btn-secondary">Clear Filters</a>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>

@@ -153,6 +153,26 @@ namespace EfficiencyHub.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Filter(ProjectFilterViewModel filters)
+        {
+            try
+            {
+                var currentUser = await GetCurrentUserAsync();
+                if (currentUser == null)
+                {
+                    return Unauthorized();
+                }
+
+                var filteredProjects = await _projectService.GetFilteredProjectsAsync(filters, currentUser.Id);
+                return View("Index", filteredProjects);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while filtering projects.");
+                return RedirectToAction("Error", "Home");
+            }
+        }
 
     }
 }

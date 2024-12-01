@@ -2,6 +2,7 @@
 using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace EfficiencyHub.Services.Data
 {
@@ -138,5 +139,45 @@ namespace EfficiencyHub.Services.Data
             var project = await _projectRepository.GetByIdAsync(projectId);
             return project?.Name ?? "Unknown Project";
         }
+
+        public async Task<IEnumerable<ProjectViewModel>> GetFilteredProjectsAsync(ProjectFilterViewModel filters, Guid userId)
+        {
+            var query = _projectRepository.GetQueryableWhere(p => p.UserId == userId);
+
+            if (!string.IsNullOrEmpty(filters.Name))
+            {
+                query = query.Where(p => p.Name.Contains(filters.Name));
+            }
+
+            if (filters.StartDate.HasValue)
+            {
+                query = query.Where(p => p.StartDate >= filters.StartDate.Value);
+            }
+
+            if (filters.EndDate.HasValue)
+            {
+                query = query.Where(p => p.EndDate <= filters.EndDate.Value);
+            }
+
+            if (!string.IsNullOrEmpty(filters.Status))
+            {
+                bool isDeleted = filters.Status == "Deleted";
+                query = query.Where(p => p.IsDeleted == isDeleted);
+            }
+
+            var projects = await query.ToListAsync();
+
+            return projects.Select(p => new ProjectViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                Role = p.Role,
+                IsDeleted = p.IsDeleted
+            }).ToList();
+        }
+
     }
 }
