@@ -2,8 +2,8 @@
 using EfficiencyHub.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-    namespace EfficiencyHub.Web.Infrastructure.Data
-    {
+namespace EfficiencyHub.Web.Infrastructure.Data
+{
     public static class DatabaseSeeder
     {
         public static void SeedData(ModelBuilder modelBuilder)
@@ -75,5 +75,4 @@ using Microsoft.EntityFrameworkCore;
             );
         }
     }
-    }
-
+}
