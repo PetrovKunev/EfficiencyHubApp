@@ -1,5 +1,7 @@
 ﻿using EfficiencyHub.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+
 
 namespace EfficiencyHub.Web.Infrastructure.Data
 {
@@ -23,13 +25,18 @@ namespace EfficiencyHub.Web.Infrastructure.Data
                     }
                 }
             }
+
         }
 
-
-        public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager)
+        public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
-            string adminEmail = "admin@gmail.com";
-            string adminPassword = "Admin@123";
+            string adminEmail = configuration["AdminUser:Email"];
+            string adminPassword = configuration["AdminUser:Password"];
+
+            if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+            {
+                throw new InvalidOperationException("Admin email or password is not configured properly.");
+            }
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)

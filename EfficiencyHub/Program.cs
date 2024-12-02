@@ -76,9 +76,10 @@ namespace EfficiencyHub.Web
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
                 await RoleSeeder.EnsureRolesAsync(roleManager);
-                await RoleSeeder.EnsureAdminUserAsync(userManager);
+                await RoleSeeder.EnsureAdminUserAsync(userManager, configuration);
             }
 
             app.UseHttpsRedirection();
