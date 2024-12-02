@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using EfficiencyHub.Web.Infrastructure.Data;
 
 namespace EfficiencyHub.Data
 {
@@ -19,5 +20,12 @@ namespace EfficiencyHub.Data
         public virtual DbSet<PerformanceReport> PerformanceReports { get; set; } = null!;
         public virtual DbSet<ProjectAssignment> ProjectAssignments { get; set; } = null!;
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            DatabaseSeeder.SeedData(modelBuilder);
+        }
     }
+
 }

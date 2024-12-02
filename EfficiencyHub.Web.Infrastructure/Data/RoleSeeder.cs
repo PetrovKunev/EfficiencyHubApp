@@ -30,13 +30,8 @@ namespace EfficiencyHub.Web.Infrastructure.Data
 
         public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
-            string adminEmail = configuration["AdminUser:Email"];
-            string adminPassword = configuration["AdminUser:Password"];
-
-            if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
-            {
-                throw new InvalidOperationException("Admin email or password is not configured properly.");
-            }
+            string adminEmail = configuration["AdminUser:Email"] ?? throw new InvalidOperationException("Admin email is not configured properly.");
+            string adminPassword = configuration["AdminUser:Password"] ?? throw new InvalidOperationException("Admin password is not configured properly.");
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)

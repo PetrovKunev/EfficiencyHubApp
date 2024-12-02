@@ -1,5 +1,24 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Welcome to the Admin Dashboard!</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/Dashboard">Dashboard</a>
+        @if (User.IsInRole("Administrator"))
+        {
+            <a href="/Admin/AdminDashboard">Admin Panel</a>
+        }
+    </div>
+</body>
+</html>
+

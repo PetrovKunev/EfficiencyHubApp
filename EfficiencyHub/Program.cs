@@ -49,7 +49,6 @@ namespace EfficiencyHub.Web
                 };
             });
 
-
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
             builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();
