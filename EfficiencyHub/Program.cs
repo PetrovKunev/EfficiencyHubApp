@@ -61,6 +61,8 @@ namespace EfficiencyHub.Web
             builder.Services.AddScoped<ReminderService>();
             builder.Services.AddScoped<PerformanceReportService>();
 
+            builder.Services.AddHostedService<DatabaseSeederHostedService>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();

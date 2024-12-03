@@ -31,20 +31,20 @@ namespace EfficiencyHub.Web.Controllers
 
             _logger.LogInformation("Current user retrieved: {UserId}", currentUser.Id);
 
-            
             if (await _userManager.IsInRoleAsync(currentUser, "Administrator"))
             {
                 _logger.LogInformation("User is in Administrator role. Redirecting to AdminDashboard.");
                 return RedirectToAction("Index", "AdminDashboard", new { area = "Admin" });
             }
 
-            
             _logger.LogInformation("User is not an Administrator. Fetching dashboard data.");
-            var dashboardData = await _dashboardService.GetDashboardDataAsync();
+
+            var dashboardData = await _dashboardService.GetDashboardDataAsync(currentUser.Id);
             _logger.LogInformation("Dashboard data retrieved successfully.");
 
             return View(dashboardData);
         }
+
 
     }
 }
