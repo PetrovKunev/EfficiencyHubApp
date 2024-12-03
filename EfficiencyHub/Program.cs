@@ -76,11 +76,6 @@ namespace EfficiencyHub.Web
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-     
-                context.Database.Migrate();
-
-                DatabaseSeeder.SeedData(context);
 
                 await RoleSeeder.EnsureRolesAsync(roleManager);
                 await RoleSeeder.EnsureAdminUserAsync(userManager, configuration);

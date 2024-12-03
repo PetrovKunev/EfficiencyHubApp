@@ -27,7 +27,6 @@ namespace EfficiencyHub.Web.Infrastructure.Data
             }
 
         }
-
         public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             string adminEmail = configuration["AdminUser:Email"] ?? throw new InvalidOperationException("Admin email is not configured properly.");

@@ -187,29 +187,31 @@ namespace EfficiencyHub.Services.Data
             {
                 var query = _activityLogRepository.GetQueryableWhere(log => log.UserId == userId);
 
-                // Apply filters that can be translated to SQL
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    query = query.Where(log => log.Description.Contains(searchTerm));
+                    var lowerSearchTerm = searchTerm.ToLower();
+                    query = query.Where(log => log.Description.ToLower().Contains(lowerSearchTerm));
                 }
 
-                // Fetch logs from the database
                 var totalCount = await query.CountAsync();
 
                 var logs = await query
                     .OrderByDescending(log => log.Timestamp)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
+                    .AsNoTracking()
                     .ToListAsync();
-
-                // Apply in-memory filtering for properties like ActionType.ToString()
+                
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    logs = logs.Where(log =>
-                        log.ActionType.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    var lowerSearchTerm = searchTerm.ToLower();
+                    logs = logs
+                        .Where(log =>
+                            log.ActionType.ToString().ToLower().Contains(lowerSearchTerm) ||
+                            log.Description.ToLower().Contains(lowerSearchTerm))
+                        .ToList();
                 }
 
-                // Map to the ViewModel
                 var logViewModels = logs.Select(log => new ActivityLogViewModel
                 {
                     Timestamp = log.Timestamp,
@@ -225,8 +227,5 @@ namespace EfficiencyHub.Services.Data
                 throw;
             }
         }
-
-
-
     }
 }
