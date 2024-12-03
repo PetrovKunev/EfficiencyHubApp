@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Efficiency.Data.Models\EfficiencyHub.Data.Models.csproj" />
+    <ProjectReference Include="..\EfficiencyHub.Services.Data\EfficiencyHub.Services.Data.csproj" />
   </ItemGroup>
 
 </Project>
