@@ -1,4 +1,7 @@
-﻿using EfficiencyHub.Data;
+﻿using EfficiencyHub.Common.Enums;
+using EfficiencyHub.Data;
+using EfficiencyHub.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,16 +24,17 @@ namespace EfficiencyHub.Web.Infrastructure.Data
         {
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             try
             {
                 _logger.LogInformation("Starting database seeding...");
 
+                // Apply migrations
                 context.Database.Migrate();
 
-                DatabaseSeeder.SeedData(context);
-
-                await context.SaveChangesAsync(cancellationToken);
+                // Seed test user and related data
+                await SeedTestUserAndDataAsync(context, userManager);
 
                 _logger.LogInformation("Database seeding completed.");
             }
@@ -41,9 +45,82 @@ namespace EfficiencyHub.Web.Infrastructure.Data
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+        private static async Task SeedTestUserAndDataAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            return Task.CompletedTask;
+            // Check if test user exists
+            var testUserEmail = "testuser@example.com";
+            var testUserPassword = "Test@123";
+
+            var existingUser = await userManager.FindByEmailAsync(testUserEmail);
+            if (existingUser == null)
+            {
+                // Create test user
+                var testUser = new ApplicationUser
+                {
+                    UserName = testUserEmail,
+                    Email = testUserEmail,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(testUser, testUserPassword);
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create test user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+
+                await userManager.AddToRoleAsync(testUser, "User");
+
+                // Seed related data
+                Guid project1Id = Guid.NewGuid();
+                Guid project2Id = Guid.NewGuid();
+                Guid task1Id = Guid.NewGuid();
+                Guid task2Id = Guid.NewGuid();
+
+                // Projects
+                var projects = new[]
+                {
+                    new Project { Id = project1Id, Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, EndDate = DateTime.Now.AddMonths(1), UserId = testUser.Id, Role = ProjectRole.ProjectManager, IsDeleted = false },
+                    new Project { Id = project2Id, Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, EndDate = DateTime.Now.AddMonths(2), UserId = testUser.Id, Role = ProjectRole.Contributor, IsDeleted = false }
+                };
+                context.Projects.AddRange(projects);
+
+                // Tasks
+                var tasks = new[]
+                {
+                    new Assignment { Id = task1Id, Title = "Task 1", Description = "Task 1 Description", DueDate = DateTime.Now.AddDays(5), Status = AssignmentStatus.InProgress, CreatedDate = DateTime.Now, IsDeleted = false },
+                    new Assignment { Id = task2Id, Title = "Task 2", Description = "Task 2 Description", DueDate = DateTime.Now.AddDays(10), Status = AssignmentStatus.Completed, CreatedDate = DateTime.Now, IsDeleted = false }
+                };
+                context.Tasks.AddRange(tasks);
+
+                // Project Assignments
+                var projectAssignments = new[]
+                {
+                    new ProjectAssignment { ProjectId = project1Id, AssignmentId = task1Id, UserId = testUser.Id, IsDeleted = false },
+                    new ProjectAssignment { ProjectId = project2Id, AssignmentId = task2Id, UserId = testUser.Id, IsDeleted = false }
+                };
+                context.ProjectAssignments.AddRange(projectAssignments);
+
+                // Reminders
+                var reminders = new[]
+                {
+                    new Reminder { Id = Guid.NewGuid(), Message = "Reminder 1", ReminderDate = DateTime.Now.AddDays(2), AssignmentId = task1Id, UserId = testUser.Id, IsDeleted = false },
+                    new Reminder { Id = Guid.NewGuid(), Message = "Reminder 2", ReminderDate = DateTime.Now.AddDays(3), AssignmentId = task2Id, UserId = testUser.Id, IsDeleted = false }
+                };
+                context.Reminders.AddRange(reminders);
+
+                // Activity Logs
+                var logs = new[]
+                {
+                    new ActivityLog { Id = Guid.NewGuid(), Timestamp = DateTime.UtcNow, ActionType = ActionType.Created, UserId = testUser.Id, Description = "Created a project" },
+                    new ActivityLog { Id = Guid.NewGuid(), Timestamp = DateTime.UtcNow, ActionType = ActionType.Updated, UserId = testUser.Id, Description = "Updated a task" }
+                };
+                context.ActivityLogs.AddRange(logs);
+
+                // Save all changes
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -2,14 +2,18 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
-
 namespace EfficiencyHub.Web.Infrastructure.Data
 {
     public static class RoleSeeder
     {
-        public static async Task EnsureRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
+        public static async Task SeedRolesAndAdminAsync(
+            RoleManager<IdentityRole<Guid>> roleManager,
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration)
         {
-            string[] roleNames = { "User", "Administrator" };
+            string[] roleNames = { "Administrator", "User" };
+
+            // Seed roles
             foreach (var roleName in roleNames)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
@@ -26,9 +30,7 @@ namespace EfficiencyHub.Web.Infrastructure.Data
                 }
             }
 
-        }
-        public static async Task EnsureAdminUserAsync(UserManager<ApplicationUser> userManager, IConfiguration configuration)
-        {
+            // Seed Admin User
             string adminEmail = configuration["AdminUser:Email"] ?? throw new InvalidOperationException("Admin email is not configured properly.");
             string adminPassword = configuration["AdminUser:Password"] ?? throw new InvalidOperationException("Admin password is not configured properly.");
 
@@ -47,8 +49,11 @@ namespace EfficiencyHub.Web.Infrastructure.Data
                 {
                     await userManager.AddToRoleAsync(adminUser, "Administrator");
                 }
+                else
+                {
+                    Console.WriteLine($"Error creating admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
             }
         }
-
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EfficiencyHub.Web.Infrastructure.Data;
 
-
 namespace EfficiencyHub.Web
 {
     public class Program
@@ -16,11 +15,13 @@ namespace EfficiencyHub.Web
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            string connectionString = builder.Configuration.GetConnectionString("SQLServer") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // Database and Identity Configuration
+            string connectionString = builder.Configuration.GetConnectionString("SQLServer") ?? throw new InvalidOperationException("Connection string 'SQLServer' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+            // Identity Configuration
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -33,6 +34,10 @@ namespace EfficiencyHub.Web
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            // Hosted Service for Data Seeding
+            builder.Services.AddHostedService<DatabaseSeederHostedService>();
+
+            // Cookie Configuration
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
@@ -49,6 +54,7 @@ namespace EfficiencyHub.Web
                 };
             });
 
+            // Scoped Services
             builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
             builder.Services.AddScoped<IRepository<Assignment>, AssignmentRepository>();
             builder.Services.AddScoped<IRepository<ActivityLog>, ActivityLogRepository>();
@@ -61,26 +67,26 @@ namespace EfficiencyHub.Web
             builder.Services.AddScoped<ReminderService>();
             builder.Services.AddScoped<PerformanceReportService>();
 
-            builder.Services.AddHostedService<DatabaseSeederHostedService>();
-
+            // MVC and Razor Pages Configuration
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Handle500");
-                app.UseHsts();
-            }
-
+            // Seed Roles and Admin User
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-                await RoleSeeder.EnsureRolesAsync(roleManager);
-                await RoleSeeder.EnsureAdminUserAsync(userManager, configuration);
+                await RoleSeeder.SeedRolesAndAdminAsync(roleManager, userManager, configuration);
+            }
+
+            // Middleware Configuration
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Handle500");
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -90,6 +96,7 @@ namespace EfficiencyHub.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Routing
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=AdminDashboard}/{action=Index}/{id?}");
@@ -97,6 +104,7 @@ namespace EfficiencyHub.Web
             app.MapControllerRoute(
                 name: "dashboard",
                 pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=LandingPage}/{id?}");
