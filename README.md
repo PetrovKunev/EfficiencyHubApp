@@ -6,12 +6,12 @@
   EfficiencyHub is a web application designed to help users organize and manage their projects and tasks. With features tailored for both individual users and administrators, the app ensures streamlined workflow management and enhanced productivity.
 
 # Features
-    User Features
+    User Features:
         - Create, edit, and delete projects.
         - Manage tasks and assignments with due dates and statuses.
         - Set up reminders for important deadlines.
         - View a personalized dashboard with activity logs, reports and reminders.
-    Admin Features
+    Admin Features:
         - Manage all users in the system: assign or remove administrative roles.
 
 # Technologies Used
