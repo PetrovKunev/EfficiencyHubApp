@@ -23,7 +23,7 @@ namespace EfficiencyHub.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            // Set default date range: last 7 days
+            
             if (!startDate.HasValue || !endDate.HasValue)
             {
                 startDate = DateTime.UtcNow.AddDays(-7);
@@ -37,10 +37,10 @@ namespace EfficiencyHub.Web.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Generate the performance report
+            
             var report = await _performanceReportService.GetPerformanceReportAsync(user.Id, startDate.Value, endDate.Value);
 
-            // Pass the report to the view
+            
             ViewBag.StartDate = startDate.Value.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate.Value.ToString("yyyy-MM-dd");
 

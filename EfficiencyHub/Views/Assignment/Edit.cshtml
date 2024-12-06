@@ -6,6 +6,7 @@
 <h2>Edit Assignment</h2>
 
 <form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="CreatedDate" />
     <input type="hidden" asp-for="ProjectId" />
 

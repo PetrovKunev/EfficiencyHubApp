@@ -6,6 +6,7 @@
 <h2>Create Reminder for: @ViewBag.AssignmentName</h2>
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="AssignmentId" />
 
     <div class="form-group">
