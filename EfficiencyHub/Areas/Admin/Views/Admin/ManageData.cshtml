@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Manage Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model AdminDataViewModel
+
+<h2 class="text-center">Manage Data</h2>
+
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col">
+            <h3>Projects</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <tr>
+                            <td>@project.Name</td>
+                            <td>@project.Description</td>
+                            <td>
+                                <div class="btn-group">
+                                    <form asp-action="DeleteProject" asp-controller="Admin" asp-area="Admin" method="post">
+                                        <input type="hidden" name="projectId" value="@project.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <form asp-action="EditProject" asp-controller="Admin" asp-area="Admin" method="get">
+                                        <input type="hidden" name="projectId" value="@project.Id" />
+                                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col">
+            <h3>Tasks</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in Model.Tasks)
+                    {
+                        <tr>
+                            <td>@task.Title</td>
+                            <td>@task.Description</td>
+                            <td>
+                                <div class="btn-group">
+                                    <form asp-action="DeleteTask" asp-controller="Admin" asp-area="Admin" method="post">
+                                        <input type="hidden" name="taskId" value="@task.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <form asp-action="EditTask" asp-controller="Admin" asp-area="Admin" method="get">
+                                        <input type="hidden" name="taskId" value="@task.Id" />
+                                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col">
+            <h3>Reminders</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Message</th>
+                        <th>Reminder Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reminder in Model.Reminders)
+                    {
+                        <tr>
+                            <td>@reminder.Message</td>
+                            <td>@reminder.ReminderDate.ToString("g")</td>
+                            <td>
+                                <div class="btn-group">
+                                    <form asp-action="DeleteReminder" asp-controller="Admin" asp-area="Admin" method="post">
+                                        <input type="hidden" name="reminderId" value="@reminder.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <form asp-action="EditReminder" asp-controller="Admin" asp-area="Admin" method="get">
+                                        <input type="hidden" name="reminderId" value="@reminder.Id" />
+                                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

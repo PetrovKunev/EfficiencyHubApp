@@ -1,0 +1,35 @@
+﻿@using EfficiencyHub.Web.Areas.Admin.Models
+@{
+    ViewData["Title"] = "Manage Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<UserWithRolesViewModel>
+
+<h2>Manage Users</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var userWithRoles in Model)
+        {
+            <tr>
+                <td>@userWithRoles.User.UserName</td>
+                <td>@userWithRoles.User.Email</td>
+                <td>@userWithRoles.Roles</td>
+                <td>
+                    <form asp-action="MakeAdmin" method="post">
+                        <input type="hidden" name="userId" value="@userWithRoles.User.Id" />
+                        <button type="submit" class="btn btn-primary">Make Admin</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

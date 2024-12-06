@@ -1,6 +1,4 @@
-﻿
-
-namespace EfficiencyHub.Common.Enums
+﻿namespace EfficiencyHub.Common.Enums
 {
     public enum ProjectRole
     {

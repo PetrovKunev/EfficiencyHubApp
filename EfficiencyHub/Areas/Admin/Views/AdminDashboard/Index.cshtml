@@ -8,17 +8,59 @@
 <head>
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        .centered-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+        }
+
+        .admin-links {
+            margin-top: 20px;
+        }
+
+            .admin-links a {
+                display: inline-block;
+                margin: 10px;
+                padding: 10px 20px;
+                text-decoration: none;
+                color: white;
+                background-color: #4CAF50;
+                border-radius: 5px;
+                transition: background-color 0.3s ease;
+            }
+
+                .admin-links a:hover {
+                    background-color: #45a049;
+                }
+
+        .admin-image {
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+
 </head>
 <body>
     <p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p>
-    <div class="navbar">
-        <a href="/">Home</a>
-        <a href="/Dashboard">Dashboard</a>
-        @if (User.IsInRole("Administrator"))
-        {
-            <a href="/Admin/AdminDashboard">Admin Panel</a>
-        }
+
+    <div class="centered-content">
+        <!-- Add an admin-related image -->
+        <img src="~/img/admin_icon.png" alt="Admin Icon" class="admin-image" />
+
+        <!-- Add links to the new admin pages -->
+        <div class="admin-links">
+            <a asp-controller="Admin" asp-action="ManageUsers" asp-area="Admin" class="btn btn-primary">
+                Manage Users
+            </a>
+            <a asp-controller="Admin" asp-action="ManageData" asp-area="Admin" class="btn btn-primary">
+                Manage Data
+            </a>
+        </div>
+
     </div>
 </body>
 </html>
-
