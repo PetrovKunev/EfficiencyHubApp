@@ -16,23 +16,23 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<PerformanceReportViewModel> GetPerformanceReportAsync(Guid userId, DateTime startDate, DateTime endDate)
         {
-            // Fetch completed assignments within the date range
-            var completedAssignments = await _assignmentRepository
+            if (endDate < startDate)
+            {
+                throw new ArgumentException("End date cannot be earlier than start date.");
+            }
+
+            var completedAssignmentsQuery = _assignmentRepository
                 .GetQueryableWhere(a => a.ProjectAssignments.Any(pa => pa.UserId == userId) &&
                                         a.CompletedDate.HasValue &&
                                         a.CompletedDate.Value.Date >= startDate.Date &&
-                                        a.CompletedDate.Value.Date <= endDate.Date)
-                .ToListAsync();
+                                        a.CompletedDate.Value.Date <= endDate.Date);
 
-            
-            var completedTaskCount = completedAssignments.Count;
+            var completedTaskCount = await completedAssignmentsQuery.CountAsync();
 
-            
             var averageCompletionTime = completedTaskCount > 0
-                ? Math.Round(completedAssignments
-                      .Where(a => a.CompletedDate.HasValue)
+                ? Math.Round(await completedAssignmentsQuery
                       .Select(a => (a.CompletedDate!.Value - a.CreatedDate).TotalDays)
-                      .Average(), 2)
+                      .AverageAsync(), 2)
                 : 0;
 
             return new PerformanceReportViewModel
@@ -42,5 +42,6 @@ namespace EfficiencyHub.Services.Data
                 ReportDate = DateTime.UtcNow
             };
         }
+
     }
 }

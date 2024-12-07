@@ -1,6 +1,5 @@
 ﻿using EfficiencyHub.Common.Enums;
 using EfficiencyHub.Data.Models;
-using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -58,8 +57,6 @@ namespace EfficiencyHub.Services.Data
                 throw;
             }
         }
-
-
 
         public async Task LogActionAsync(Guid userId, ActionType actionType, string description, Guid? relatedId = null, string? relatedEntityType = null)
         {
