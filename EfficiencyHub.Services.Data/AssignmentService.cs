@@ -1,6 +1,5 @@
 ﻿using EfficiencyHub.Common.Enums;
 using EfficiencyHub.Data.Models;
-using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;

@@ -21,7 +21,7 @@ namespace EfficiencyHub.Services.Data
 
         public async Task<IEnumerable<ReminderViewModel>> GetRemindersForUserAsync(Guid userId)
         {
-            // Филтрираме само напомнянията, които не са изтрити
+            
             var reminders = await _reminderRepository.GetWhereAsync(r => r.UserId == userId && !r.IsDeleted);
 
             return reminders.Select(r => new ReminderViewModel
@@ -155,7 +155,7 @@ namespace EfficiencyHub.Services.Data
         {
             var reminder = await _reminderRepository
                 .GetQueryableWhere(r => r.Id == id && r.UserId == userId)
-                .Include(r => r.Assignment) // Include related assignment for logging
+                .Include(r => r.Assignment)
                 .FirstOrDefaultAsync();
 
             if (reminder == null)
@@ -167,7 +167,7 @@ namespace EfficiencyHub.Services.Data
             reminder.IsDeleted = true;
             await _reminderRepository.UpdateAsync(reminder);
 
-            // Log the deletion along with assignment details
+            
             var assignmentTitle = reminder.Assignment?.Title ?? "Unknown Assignment";
             await _activityLogService.LogActionAsync(userId, ActionType.Deleted,
                 $"Deleted reminder with message '{reminder.Message}' (linked to assignment: '{assignmentTitle}')",
@@ -177,5 +177,4 @@ namespace EfficiencyHub.Services.Data
         }
 
     }
-
 }

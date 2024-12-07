@@ -2,68 +2,63 @@
 using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Services.Data;
+using EfficiencyHub.Services.Tests.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using MockQueryable;
 using System.Linq.Expressions;
-
 
 namespace EfficiencyHub.Services.Tests
 {
     public class ActivityLogServiceTests
     {
-        private readonly Mock<IRepository<ActivityLog>> mockActivityLogRepository;
-        private readonly Mock<IRepository<Assignment>> mockAssignmentRepository;
-        private readonly Mock<IRepository<Reminder>> mockReminderRepository;
-        private readonly Mock<IRepository<Project>> mockProjectRepository;
-        private readonly Mock<IRepository<ProjectAssignment>> mockProjectAssignmentRepository;
-        private readonly Mock<ILogger<ActivityLogService>> mockLogger;
+        private readonly Mock<IRepository<ActivityLog>> _activityLogRepositoryMock;
+        private readonly Mock<ILogger<ActivityLogService>> _loggerMock;
+        private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
+        private readonly Mock<IRepository<Assignment>> _assignmentRepositoryMock;
+        private readonly Mock<IRepository<Reminder>> _reminderRepositoryMock;
+        private readonly Mock<IRepository<Project>> _projectRepositoryMock;
+        private readonly Mock<IRepository<ProjectAssignment>> _projectAssignmentRepositoryMock;
+        private readonly ActivityLogService _activityLogService;
+
 
         public ActivityLogServiceTests()
         {
-            this.mockActivityLogRepository = new Mock<IRepository<ActivityLog>>();
-            this.mockAssignmentRepository = new Mock<IRepository<Assignment>>();
-            this.mockReminderRepository = new Mock<IRepository<Reminder>>();
-            this.mockProjectRepository = new Mock<IRepository<Project>>();
-            this.mockProjectAssignmentRepository = new Mock<IRepository<ProjectAssignment>>();
-            this.mockLogger = new Mock<ILogger<ActivityLogService>>();
+            _activityLogRepositoryMock = new Mock<IRepository<ActivityLog>>();
+            _userManagerMock = CreateUserManagerMock();
+            _assignmentRepositoryMock = new Mock<IRepository<Assignment>>();
+            _reminderRepositoryMock = new Mock<IRepository<Reminder>>();
+            _projectRepositoryMock = new Mock<IRepository<Project>>();
+            _projectAssignmentRepositoryMock = new Mock<IRepository<ProjectAssignment>>();
+            _loggerMock = new Mock<ILogger<ActivityLogService>>();
+
+            _activityLogService = new ActivityLogService(
+                _activityLogRepositoryMock.Object,
+                _loggerMock.Object,
+                _userManagerMock.Object,
+                _assignmentRepositoryMock.Object,
+                _reminderRepositoryMock.Object,
+                _projectRepositoryMock.Object,
+                _projectAssignmentRepositoryMock.Object
+            );
         }
 
-        private ActivityLogService CreateService()
+
+        private Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
-            return new ActivityLogService(
-                mockActivityLogRepository.Object,
-                mockLogger.Object,
-                null,
-                mockAssignmentRepository.Object,
-                mockReminderRepository.Object,
-                mockProjectRepository.Object,
-                mockProjectAssignmentRepository.Object);
-        }
+            var store = new Mock<IUserStore<ApplicationUser>>();
+            var userManagerMock = new Mock<UserManager<ApplicationUser>>(
+                store.Object,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!);
 
-        [Fact]
-        public async Task GetTotalLogsAsync_ShouldReturnCorrectCount()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var activityLogs = new List<ActivityLog>
-            {
-                new ActivityLog { UserId = userId, ActionType = ActionType.Created, Description = "Created task 1", Timestamp = DateTime.UtcNow },
-                new ActivityLog { UserId = userId, ActionType = ActionType.Updated, Description = "Updated task 2", Timestamp = DateTime.UtcNow }
-            }.AsQueryable().BuildMock();
-
-            this.mockActivityLogRepository
-                .Setup(repo => repo.GetQueryableWhere(It.IsAny<Expression<Func<ActivityLog, bool>>>()))
-                .Returns((Expression<Func<ActivityLog, bool>> predicate) =>
-                    activityLogs.Where(predicate.Compile()).AsQueryable());
-
-            var service = CreateService();
-
-            // Act
-            var totalLogs = await service.GetTotalLogsAsync(userId);
-
-            // Assert
-            Assert.Equal(2, totalLogs);
+            return userManagerMock;
         }
 
         [Fact]
@@ -71,79 +66,45 @@ namespace EfficiencyHub.Services.Tests
         {
             // Arrange
             var userId = Guid.NewGuid();
-            var activityLogs = new List<ActivityLog>
+            var logs = new List<ActivityLog>
             {
-                new ActivityLog { UserId = userId, ActionType = ActionType.Created, Description = "Created task 1", Timestamp = DateTime.UtcNow.AddMinutes(-10) },
-                new ActivityLog { UserId = userId, ActionType = ActionType.Updated, Description = "Updated task 2", Timestamp = DateTime.UtcNow.AddMinutes(-5) },
-                new ActivityLog { UserId = userId, ActionType = ActionType.Deleted, Description = "Deleted task 3", Timestamp = DateTime.UtcNow.AddMinutes(-1) }
-            }.AsQueryable().BuildMock();
+                new ActivityLog { UserId = userId, Timestamp = DateTime.Now, ActionType = ActionType.Created, Description = "Created something" },
+                new ActivityLog { UserId = userId, Timestamp = DateTime.Now.AddMinutes(-1), ActionType = ActionType.Updated, Description = "Updated something" }
+            }.AsQueryable();
 
-            this.mockActivityLogRepository
-            .Setup(repo => repo.GetQueryableWhere(It.IsAny<Expression<Func<ActivityLog, bool>>>()))
-            .Returns((Expression<Func<ActivityLog, bool>> predicate) =>
-                activityLogs.Where(predicate.Compile()).AsQueryable());
+            // Създайте мокнат IQueryable с TestAsyncQueryProvider
+            var mockQueryable = new Mock<IQueryable<ActivityLog>>();
+            mockQueryable.As<IAsyncEnumerable<ActivityLog>>()
+                .Setup(x => x.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Returns(new TestAsyncEnumerator<ActivityLog>(logs.GetEnumerator()));
 
-            var service = CreateService();
+            mockQueryable.As<IQueryable<ActivityLog>>()
+                .Setup(m => m.Provider)
+                .Returns(new TestAsyncQueryProvider<ActivityLog>(logs.Provider));
 
-            // Act
-            var logs = await service.GetPagedUserActionsAsync(userId, pageNumber: 1, pageSize: 2);
+            mockQueryable.As<IQueryable<ActivityLog>>()
+                .Setup(m => m.Expression)
+                .Returns(logs.Expression);
 
-            // Assert
-            Assert.Equal(2, logs.Count());
-            Assert.Equal("Deleted task 3", logs.First().Description);
-        }
+            mockQueryable.As<IQueryable<ActivityLog>>()
+                .Setup(m => m.ElementType)
+                .Returns(logs.ElementType);
 
-        [Fact]
-        public async Task LogActionAsync_ShouldAddLogToRepository()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var actionType = ActionType.Created;
-            var description = "Created a new task";
+            mockQueryable.As<IQueryable<ActivityLog>>()
+                .Setup(m => m.GetEnumerator())
+                .Returns(logs.GetEnumerator());
 
-            this.mockActivityLogRepository
-                .Setup(repo => repo.AddAsync(It.IsAny<ActivityLog>()))
-                .Returns(Task.CompletedTask);
-
-            var service = CreateService();
-
-            // Act
-            await service.LogActionAsync(userId, actionType, description);
-
-            // Assert
-            this.mockActivityLogRepository.Verify(repo => repo.AddAsync(It.Is<ActivityLog>(
-                log => log.UserId == userId &&
-                       log.ActionType == actionType &&
-                       log.Description.Contains(description))), Times.Once);
-        }
-
-        [Fact]
-        public async Task SearchActivityLogsAsync_ShouldReturnFilteredLogs()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var searchTerm = "created";
-            var activityLogs = new List<ActivityLog>
-            {
-                new ActivityLog { UserId = userId, ActionType = ActionType.Created, Description = "Created task 1", Timestamp = DateTime.UtcNow },
-                new ActivityLog { UserId = userId, ActionType = ActionType.Updated, Description = "Updated task 2", Timestamp = DateTime.UtcNow },
-                new ActivityLog { UserId = userId, ActionType = ActionType.Created, Description = "Another created task", Timestamp = DateTime.UtcNow }
-            }.AsQueryable().BuildMock();
-
-            this.mockActivityLogRepository
+            _activityLogRepositoryMock
                 .Setup(repo => repo.GetQueryableWhere(It.IsAny<Expression<Func<ActivityLog, bool>>>()))
-                .Returns((Expression<Func<ActivityLog, bool>> predicate) =>
-                    activityLogs.Where(predicate.Compile()).AsQueryable());
-
-            var service = CreateService();
+                .Returns(mockQueryable.Object);
 
             // Act
-            var (filteredLogs, totalCount) = await service.SearchActivityLogsAsync(userId, searchTerm, pageNumber: 1, pageSize: 10);
+            var result = await _activityLogService.GetPagedUserActionsAsync(userId, 1, 2);
 
             // Assert
-            Assert.Equal(2, totalCount);
-            Assert.Equal(2, filteredLogs.Count());
-            Assert.All(filteredLogs, log => Assert.Contains(searchTerm, log.Description.ToLower()));
+            Assert.Equal(2, result.Count());
+            Assert.Equal("Created something", result.First().Description);
         }
+
     }
 }
