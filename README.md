@@ -16,7 +16,7 @@
 * Manage all users in the system: assign or remove administrative roles.
 
 # Technologies Used
-+ Backend: ASP.NET Core 8
++ Backend: ASP.NET Core 8.0
 + Frontend: Razor Pages, Bootstrap
 + Database: Microsoft SQL Server
 + Authentication & Authorization: Identity Framework
@@ -33,5 +33,7 @@
                             "Password": ".........."
                         }
      ```
+     testuser@example.com => 
+     password: Test@123
 + Apply migrations
     
