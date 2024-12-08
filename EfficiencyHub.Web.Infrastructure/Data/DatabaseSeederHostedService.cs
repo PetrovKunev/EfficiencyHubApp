@@ -30,10 +30,8 @@ namespace EfficiencyHub.Web.Infrastructure.Data
             {
                 _logger.LogInformation("Starting database seeding...");
 
-                // Apply migrations
                 context.Database.Migrate();
 
-                // Seed test user and related data
                 await SeedTestUserAndDataAsync(context, userManager);
 
                 _logger.LogInformation("Database seeding completed.");
@@ -49,14 +47,12 @@ namespace EfficiencyHub.Web.Infrastructure.Data
 
         private static async Task SeedTestUserAndDataAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            // Check if test user exists
             var testUserEmail = "testuser@example.com";
             var testUserPassword = "Test@123";
 
             var existingUser = await userManager.FindByEmailAsync(testUserEmail);
             if (existingUser == null)
             {
-                // Create test user
                 var testUser = new ApplicationUser
                 {
                     UserName = testUserEmail,
@@ -72,7 +68,6 @@ namespace EfficiencyHub.Web.Infrastructure.Data
 
                 await userManager.AddToRoleAsync(testUser, "User");
 
-                // Seed related data
                 Guid project1Id = Guid.NewGuid();
                 Guid project2Id = Guid.NewGuid();
                 Guid task1Id = Guid.NewGuid();

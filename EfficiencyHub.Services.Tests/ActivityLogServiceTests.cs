@@ -72,7 +72,7 @@ namespace EfficiencyHub.Services.Tests
                 new ActivityLog { UserId = userId, Timestamp = DateTime.Now.AddMinutes(-1), ActionType = ActionType.Updated, Description = "Updated something" }
             }.AsQueryable();
 
-            // Създайте мокнат IQueryable с TestAsyncQueryProvider
+            
             var mockQueryable = new Mock<IQueryable<ActivityLog>>();
             mockQueryable.As<IAsyncEnumerable<ActivityLog>>()
                 .Setup(x => x.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
