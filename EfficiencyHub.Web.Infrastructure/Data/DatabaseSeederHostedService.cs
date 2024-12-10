@@ -105,16 +105,44 @@ namespace EfficiencyHub.Web.Infrastructure.Data
                 };
                 context.Reminders.AddRange(reminders);
 
-                // Activity Logs
-                var logs = new[]
-                {
-                    new ActivityLog { Id = Guid.NewGuid(), Timestamp = DateTime.UtcNow, ActionType = ActionType.Created, UserId = testUser.Id, Description = "Created a project" },
-                    new ActivityLog { Id = Guid.NewGuid(), Timestamp = DateTime.UtcNow, ActionType = ActionType.Updated, UserId = testUser.Id, Description = "Updated a task" }
-                };
-                context.ActivityLogs.AddRange(logs);
+                // Activity logs
+                var logs = new List<ActivityLog>();
 
-                // Save all changes
+                
+                logs.AddRange(new[]
+                {
+                    new ActivityLog
+                    {
+                        Id = Guid.NewGuid(),
+                        Timestamp = DateTime.UtcNow,
+                        ActionType = ActionType.Created,
+                        UserId = testUser.Id,
+                        Description = "Created a project"
+                    },
+                    new ActivityLog
+                    {
+                        Id = Guid.NewGuid(),
+                        Timestamp = DateTime.UtcNow,
+                        ActionType = ActionType.Updated,
+                        UserId = testUser.Id,
+                        Description = "Updated a task"
+                    }
+                });
+
+                
+                logs.AddRange(Enumerable.Range(1, 23).Select(i => new ActivityLog
+                {
+                    Id = Guid.NewGuid(),
+                    Timestamp = DateTime.UtcNow.AddMinutes(-i),
+                    ActionType = i % 2 == 0 ? ActionType.Created : ActionType.Deleted,
+                    UserId = testUser.Id,
+                    Description = $"Log entry {i}"
+                }));
+
+                
+                context.ActivityLogs.AddRange(logs);
                 await context.SaveChangesAsync();
+
             }
         }
     }

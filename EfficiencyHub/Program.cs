@@ -3,9 +3,9 @@ using EfficiencyHub.Data.Models;
 using EfficiencyHub.Data.Repository;
 using EfficiencyHub.Data.Repository.Interfaces;
 using EfficiencyHub.Services.Data;
+using EfficiencyHub.Web.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EfficiencyHub.Web.Infrastructure.Data;
 
 namespace EfficiencyHub.Web
 {
@@ -25,10 +25,10 @@ namespace EfficiencyHub.Web
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireLowercase = true;
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()

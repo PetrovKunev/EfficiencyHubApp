@@ -1,11 +1,11 @@
-﻿using EfficiencyHub.Common.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EfficiencyHub.Common.Enums;
 using static EfficiencyHub.Common.EntityValidationConstants;
 
 namespace EfficiencyHub.Data.Models
 {
-    
+
     public class ActivityLog
     {
         [Key]
