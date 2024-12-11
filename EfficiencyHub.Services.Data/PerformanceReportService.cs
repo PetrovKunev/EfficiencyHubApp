@@ -21,18 +21,27 @@ namespace EfficiencyHub.Services.Data
                 throw new ArgumentException("End date cannot be earlier than start date.");
             }
 
-            var completedAssignmentsQuery = _assignmentRepository
+            
+            var completedAssignments = await _assignmentRepository
                 .GetQueryableWhere(a => a.ProjectAssignments.Any(pa => pa.UserId == userId) &&
                                         a.CompletedDate.HasValue &&
                                         a.CompletedDate.Value.Date >= startDate.Date &&
-                                        a.CompletedDate.Value.Date <= endDate.Date);
+                                        a.CompletedDate.Value.Date <= endDate.Date)
+                .Select(a => new
+                {
+                    a.CreatedDate,
+                    CompletedDate = a.CompletedDate ?? DateTime.MinValue
+                })
+                .ToListAsync();
 
-            var completedTaskCount = await completedAssignmentsQuery.CountAsync();
+            
+            var completedTaskCount = completedAssignments.Count;
 
+            
             var averageCompletionTime = completedTaskCount > 0
-                ? Math.Round(await completedAssignmentsQuery
-                      .Select(a => (a.CompletedDate!.Value - a.CreatedDate).TotalDays)
-                      .AverageAsync(), 2)
+                ? Math.Round(completedAssignments
+                      .Select(a => (a.CompletedDate - a.CreatedDate).TotalDays)
+                      .Average(), 2)
                 : 0;
 
             return new PerformanceReportViewModel
