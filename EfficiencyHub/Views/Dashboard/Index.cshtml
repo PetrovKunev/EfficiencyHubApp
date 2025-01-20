@@ -1,57 +1,139 @@
 ﻿@model DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<!-- Текущо време -->
-<p>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Текущо време -->
+        <div class="text-muted">
+            <small>Current Time: @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
+        </div>
 
-<!-- Заглавие -->
-<h1 class="text-center"><u>Dashboard</u></h1>
-<!-- Бутоните View My Projects и Reports -->
-<div class="mb-4 text-center">
-    <a asp-controller="Project" asp-action="Index" class="btn btn-primary">
-        View My Projects
-    </a>
-    <a asp-controller="PerformanceReport" asp-action="Index" class="btn btn-danger ms-2">
-        Reports
-    </a>
-</div>
-
-<div class="row mt-4">
-    <!-- (Projects, All Tasks, Completed Tasks) -->
-    <div class="col-md-4">
-            <p><h5><u>Projects:</u></h5> <b>@Model.ProjectCount</b></p>
-            <p><h5><u>All Tasks:</u></h5><b>@Model.TaskCount</b></p>
-            <p><h5><u>Completed Tasks:</u></h5> <b>@Model.CompletedTaskCount</b></p>
+        <!-- Заглавие -->
+        <h1 class="text-center m-0">Dashboard</h1>
     </div>
 
 
-    <div class="col-md-4">
-        <div>
-            <h3>Recent Activities:</h3>
-            <ul>
-                @foreach (var log in Model.RecentActivityLogs)
-                {
-                    <li>@Html.Raw(log.Description) - @log.Timestamp.ToString("dd-MM-yyyy HH:mm")</li>
-                }
-            </ul>
-            <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-secondary mt-2">
-                View Logs
-            </a>
+    <!-- Бутоните View My Projects и Reports -->
+    <div class="mb-4 text-center">
+        <a asp-controller="Project" asp-action="Index" class="btn btn-primary btn-lg">
+            View My Projects
+        </a>
+        <a asp-controller="PerformanceReport" asp-action="Index" class="btn btn-danger btn-lg ms-3">
+            Reports
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Projects, All Tasks, Completed Tasks -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><u>Projects</u></h5>
+                    <h2>@Model.ProjectCount</h2>
+                </div>
+            </div>
+            <div class="card text-white bg-secondary shadow mt-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><u>All Tasks</u></h5>
+                    <h2>@Model.TaskCount</h2>
+                </div>
+            </div>
+            <div class="card text-white bg-success shadow mt-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><u>Completed Tasks</u></h5>
+                    <h2>@Model.CompletedTaskCount</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><u>Recent Activities</u></h5>
+                    <ul class="list-group">
+                        @foreach (var log in Model.RecentActivityLogs)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@Html.Raw(log.Description)</span>
+                                <span class="badge bg-info text-dark">
+                                    @log.Timestamp.ToString("dd-MM-yyyy HH:mm")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-secondary mt-3 w-100">
+                        View Logs
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Reminders -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><u>Upcoming Reminders</u></h5>
+                    <ul class="list-group">
+                        @foreach (var reminder in Model.UpcomingReminders)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@reminder.Message</span>
+                                <span class="badge bg-warning text-dark">
+                                    @reminder.ReminderDate.ToString("dd-MM-yyyy HH:mm")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- (Upcoming Reminders) -->
-    <div class="col-md-4">
-        <div>
-            <h3>Upcoming Reminders:</h3>
-            <ul>
-                @foreach (var reminder in Model.UpcomingReminders)
-                {
-                    <li>@reminder.Message - @reminder.ReminderDate.ToString("dd-MM-yyyy HH:mm")</li>
-                }
-            </ul>
-        </div>
+    <div class="mt-5">
+        <h3 class="text-center">Task Overview</h3>
+        <canvas id="taskChart" width="400" height="200"></canvas>
     </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('taskChart').getContext('2d');
+        const taskChart = new Chart(ctx, {
+            type: 'line', // Можете да смените с 'pie', 'line' и др.
+            data: {
+                labels: ['All Tasks', 'Completed Tasks'], // Етикети
+                datasets: [{
+                    label: 'Tasks',
+                    data: [@Model.TaskCount, @Model.CompletedTaskCount], // Данни от модела
+                    backgroundColor: ['#ff6384', '#36a2eb'], // Цветове
+                    borderColor: ['#ff6384', '#36a2eb'], // Граница
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true // Започва от нула
+                    }
+                }
+            }
+        });
+    });
+</script>
+
